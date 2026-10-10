@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'admin@usb.ve'
+        || request.auth.token.email == 'administracion@usb.ve'
+        || request.auth.token.email == 'maopromaster11@gmail.com'
+        || (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        )
+        || (
+          exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin'
+        )
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+
+      allow create: if isAdmin()
+        || (
+          isSignedIn()
+          && request.auth.uid == userId
+          && request.resource.data.uid == request.auth.uid
+        );
+
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // Tabla / colección de administradores (correos + OTP).
+    match /admins/{adminId} {
+      allow read: if isOwner(adminId) || isAdmin();
+
+      allow create: if isSignedIn()
+        && request.auth.uid == adminId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == 'admin';
+
+      allow update: if isOwner(adminId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Cola opcional para extensión "Trigger Email from Firestore".
+    match /mail/{mailId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if false;
+    }
+
+    match /published_skill_quizzes/{docId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

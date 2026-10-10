@@ -1,0 +1,241 @@
+{
+  "version": 3,
+  "sources": [
+    "Training_IA/essay_dataset.csv",
+    "Training_IA/ASAP2_train_sourcetexts.csv"
+  ],
+  "n_samples": 13000,
+  "n_essay_dataset": 1000,
+  "n_asap2": 12000,
+  "feature_names": [
+    "unigram_count",
+    "unique_ratio",
+    "avg_sentence_length",
+    "avg_word_length",
+    "punctuation_error_fraction",
+    "capitalization_score",
+    "line_breaks"
+  ],
+  "feature_norm": {
+    "mean": {
+      "unigram_count": 328.244308,
+      "unique_ratio": 0.50364,
+      "avg_sentence_length": 20.49442,
+      "avg_word_length": 4.663039,
+      "punctuation_error_fraction": 0.05052,
+      "capitalization_score": 3.833263,
+      "line_breaks": 6.765385
+    },
+    "std": {
+      "unigram_count": 159.851551,
+      "unique_ratio": 0.115461,
+      "avg_sentence_length": 12.24539,
+      "avg_word_length": 0.639735,
+      "punctuation_error_fraction": 0.123389,
+      "capitalization_score": 0.999101,
+      "line_breaks": 7.152474
+    }
+  },
+  "dimension_stats": {
+    "cohesion": {
+      "mean": 2.6657,
+      "std": 0.8151,
+      "p25": 1.9854,
+      "p75": 3.4198
+    },
+    "syntax": {
+      "mean": 2.8952,
+      "std": 0.841,
+      "p25": 2.12,
+      "p75": 3.56
+    },
+    "vocabulary": {
+      "mean": 2.6796,
+      "std": 0.7713,
+      "p25": 2.0864,
+      "p75": 3.4143
+    },
+    "phraseology": {
+      "mean": 2.9612,
+      "std": 0.7737,
+      "p25": 2.284,
+      "p75": 3.4632
+    },
+    "grammar": {
+      "mean": 2.5404,
+      "std": 0.8774,
+      "p25": 1.8,
+      "p75": 3.381
+    },
+    "conventions": {
+      "mean": 2.5348,
+      "std": 0.852,
+      "p25": 1.8,
+      "p75": 3.3711
+    }
+  },
+  "regression_models": {
+    "cohesion": {
+      "intercept": 2.665717,
+      "coefficients": {
+        "unigram_count": 0.545657,
+        "unique_ratio": -0.066766,
+        "avg_sentence_length": -0.055821,
+        "avg_word_length": 0.386205,
+        "punctuation_error_fraction": -0.03977,
+        "capitalization_score": 0.033519,
+        "line_breaks": -0.040062
+      },
+      "rmse": 0.5916
+    },
+    "syntax": {
+      "intercept": 2.895208,
+      "coefficients": {
+        "unigram_count": 0.471939,
+        "unique_ratio": -0.076515,
+        "avg_sentence_length": -0.062564,
+        "avg_word_length": 0.640143,
+        "punctuation_error_fraction": -0.043157,
+        "capitalization_score": 0.029411,
+        "line_breaks": -0.053085
+      },
+      "rmse": 0.5372
+    },
+    "vocabulary": {
+      "intercept": 2.679643,
+      "coefficients": {
+        "unigram_count": 0.72137,
+        "unique_ratio": 0.264225,
+        "avg_sentence_length": -0.048686,
+        "avg_word_length": 0.088435,
+        "punctuation_error_fraction": -0.047287,
+        "capitalization_score": 0.035196,
+        "line_breaks": -0.026122
+      },
+      "rmse": 0.534
+    },
+    "phraseology": {
+      "intercept": 2.961193,
+      "coefficients": {
+        "unigram_count": 0.534987,
+        "unique_ratio": -0.101316,
+        "avg_sentence_length": -0.046485,
+        "avg_word_length": 0.250969,
+        "punctuation_error_fraction": -0.034858,
+        "capitalization_score": 0.232272,
+        "line_breaks": -0.029488
+      },
+      "rmse": 0.4699
+    },
+    "grammar": {
+      "intercept": 2.540374,
+      "coefficients": {
+        "unigram_count": 0.585506,
+        "unique_ratio": -0.089365,
+        "avg_sentence_length": -0.058271,
+        "avg_word_length": 0.436008,
+        "punctuation_error_fraction": -0.083639,
+        "capitalization_score": 0.035137,
+        "line_breaks": -0.044094
+      },
+      "rmse": 0.6168
+    },
+    "conventions": {
+      "intercept": 2.534779,
+      "coefficients": {
+        "unigram_count": 0.583568,
+        "unique_ratio": -0.090853,
+        "avg_sentence_length": -0.057731,
+        "avg_word_length": 0.439191,
+        "punctuation_error_fraction": -0.098562,
+        "capitalization_score": 0.03509,
+        "line_breaks": -0.044272
+      },
+      "rmse": 0.5754
+    }
+  },
+  "feature_benchmarks": {
+    "unigram_count": 564.0,
+    "unique_ratio": 0.468531,
+    "avg_sentence_length": 22.449569,
+    "avg_word_length": 4.821036,
+    "punctuation_error_fraction": 0.022727,
+    "capitalization_score": 5.0,
+    "line_breaks": 10.0
+  },
+  "improvement_playbook": {
+    "feature_tips": {
+      "unigram_count": "La extensi\u00f3n del texto de referencia en ensayos exitosos ronda 484 (vs 245 en ensayos d\u00e9biles). Desarrolla ideas con oraciones completas.",
+      "unique_ratio": "Los ensayos fuertes del dataset muestran mayor variedad de vocabulario (45% vs 53%). Evita repetir las mismas palabras.",
+      "avg_sentence_length": "La longitud media de oraci\u00f3n de referencia en ensayos exitosos ronda 20 (vs 24 en ensayos d\u00e9biles). Desarrolla ideas con oraciones completas.",
+      "avg_word_length": "Mejora tu palabras m\u00e1s precisas: referencia del dataset 4.72 frente a 4.44 en respuestas d\u00e9biles.",
+      "punctuation_error_fraction": "En ensayos con mejor nota, los errores de puntuaci\u00f3n son menores (0.02 vs 0.10 en ensayos d\u00e9biles). Revisa comas, puntos y espacios.",
+      "capitalization_score": "Mejora tu uso de may\u00fasculas (p. ej. I): referencia del dataset 4.03 frente a 3.28 en respuestas d\u00e9biles.",
+      "line_breaks": "Mejora tu organizaci\u00f3n en p\u00e1rrafos: referencia del dataset 8.56 frente a 5.66 en respuestas d\u00e9biles."
+    },
+    "dimension_tips": {
+      "cohesion": [
+        "Estudiantes con alta cohesi\u00f3n en el dataset suelen puntuar \u22653.4/5 (t\u00fa puedes apuntar a ese rango).",
+        "Une ideas con conectores: however, therefore, for example (patr\u00f3n frecuente en ASAP2).",
+        "Responde primero la idea principal; luego el detalle (como en ensayos con alta coherence_score)."
+      ],
+      "syntax": [
+        "Estudiantes con alta sintaxis en el dataset suelen puntuar \u22653.6/5 (t\u00fa puedes apuntar a ese rango).",
+        "Usa una idea por oraci\u00f3n; evita enredar dos tiempos verbales (error com\u00fan en ensayos score 1\u20132)."
+      ],
+      "vocabulary": [
+        "Estudiantes con alta vocabulario en el dataset suelen puntuar \u22653.4/5 (t\u00fa puedes apuntar a ese rango).",
+        "Sustituye palabras repetidas por sin\u00f3nimos; el dataset premia lexical_richness alto."
+      ],
+      "phraseology": [
+        "Estudiantes con alta expresi\u00f3n oral/escrita en el dataset suelen puntuar \u22653.5/5 (t\u00fa puedes apuntar a ese rango).",
+        "Imita colocaciones naturales del enunciado (frases hechas correctas, no traducci\u00f3n literal)."
+      ],
+      "grammar": [
+        "Estudiantes con alta gram\u00e1tica en el dataset suelen puntuar \u22653.4/5 (t\u00fa puedes apuntar a ese rango).",
+        "Verifica concordancia sujeto\u2013verbo y tiempo verbal (grammar_score bajo en essay_dataset correlaciona con m\u00e1s errores)."
+      ],
+      "conventions": [
+        "Estudiantes con alta convenciones en el dataset suelen puntuar \u22653.4/5 (t\u00fa puedes apuntar a ese rango).",
+        "Puntuaci\u00f3n y may\u00fasculas: los ensayos ASAP2 con score bajo tienen m\u00e1s punctuation_error_fraction."
+      ]
+    },
+    "mcq_error_templates": {
+      "listening": "Confundiste detalles del audio. Escucha otra vez y anota n\u00fameros, horas y sustantivos clave antes de elegir.",
+      "reading": "La opci\u00f3n correcta exige leer con detalle el pasaje. Busca sin\u00f3nimos y par\u00e1frasis, no solo palabras iguales.",
+      "writing": "Revisa reglas gramaticales y convenciones (may\u00fasculas, tiempos verbales) como en los ensayos calificados del dataset.",
+      "speaking": "Tu frase no coincidi\u00f3 lo suficiente con el modelo. Divide la frase en grupos de palabras y repite despacio."
+    }
+  },
+  "skill_primary_dimensions": {
+    "listening": [
+      "cohesion",
+      "vocabulary",
+      "syntax"
+    ],
+    "reading": [
+      "vocabulary",
+      "cohesion",
+      "syntax"
+    ],
+    "writing": [
+      "grammar",
+      "conventions",
+      "vocabulary"
+    ],
+    "speaking": [
+      "phraseology",
+      "vocabulary",
+      "grammar"
+    ]
+  },
+  "strength_threshold": 3.55,
+  "weakness_threshold": 2.8,
+  "essay_dataset_mapping": {
+    "grammar_score": "grammar",
+    "coherence_score": "cohesion",
+    "lexical_richness": "vocabulary",
+    "avg_sentence_length": "syntax",
+    "content_relevance_score": "phraseology"
+  }
+}
