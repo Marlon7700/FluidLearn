@@ -1,1 +1,2 @@
+*.csv filter=lfs diff=lfs merge=lfs -text
 Training_IA/ASAP2_train_sourcetexts.csv filter=lfs diff=lfs merge=lfs -text
