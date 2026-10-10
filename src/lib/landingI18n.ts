@@ -114,7 +114,7 @@ export type LandingDict = {
   footerResourcesTitle: string
   footerResourceLinks: string[]
   footerCopyright: string
-  footerLegal: string[]
+  footerLegal: { label: string; to: string }[]
   brandTagline: string
 }
 
@@ -260,11 +260,10 @@ const en: LandingDict = {
   ],
   footerCopyright: 'Copyright © 2026 · FluidLearn',
   footerLegal: [
-    'Privacy policy',
-    'Terms of use',
-    'Legal notice',
-    'Special conditions',
-    'Cookie policy',
+    { label: 'Privacy policy', to: '/legal/privacidad' },
+    { label: 'General terms', to: '/legal/condiciones-generales' },
+    { label: 'Special conditions', to: '/legal/condiciones-particulares' },
+    { label: 'Cookie policy', to: '/legal/privacidad#cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -418,11 +417,10 @@ const pt: LandingDict = {
   ],
   footerCopyright: 'Copyright © 2026 · FluidLearn',
   footerLegal: [
-    'Política de privacidade',
-    'Condições gerais',
-    'Informação legal',
-    'Condições particulares',
-    'Política de cookies',
+    { label: 'Política de privacidade', to: '/legal/privacidad' },
+    { label: 'Condições gerais', to: '/legal/condiciones-generales' },
+    { label: 'Condições particulares', to: '/legal/condiciones-particulares' },
+    { label: 'Política de cookies', to: '/legal/privacidad#cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -599,11 +597,10 @@ const it: LandingDict = {
   ],
   footerCopyright: 'Copyright © 2026 · FluidLearn',
   footerLegal: [
-    'Privacy policy',
-    'Condizioni generali',
-    'Informazioni legali',
-    'Condizioni particolari',
-    'Cookie policy',
+    { label: 'Privacy policy', to: '/legal/privacidad' },
+    { label: 'Condizioni generali', to: '/legal/condiciones-generales' },
+    { label: 'Condizioni particolari', to: '/legal/condiciones-particulares' },
+    { label: 'Cookie policy', to: '/legal/privacidad#cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -750,11 +747,10 @@ const de: LandingDict = {
   ],
   footerCopyright: 'Copyright © 2026 · FluidLearn',
   footerLegal: [
-    'Datenschutz',
-    'Nutzungsbedingungen',
-    'Rechtliche Hinweise',
-    'Besondere Bedingungen',
-    'Cookie-Richtlinie',
+    { label: 'Datenschutz', to: '/legal/privacidad' },
+    { label: 'Nutzungsbedingungen', to: '/legal/condiciones-generales' },
+    { label: 'Besondere Bedingungen', to: '/legal/condiciones-particulares' },
+    { label: 'Cookie-Richtlinie', to: '/legal/privacidad#cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -901,11 +897,10 @@ const es: LandingDict = {
   ],
   footerCopyright: 'Copyright © 2026 · FluidLearn',
   footerLegal: [
-    'Política de privacidad',
-    'Condiciones generales',
-    'Información legal',
-    'Condiciones particulares',
-    'Política de cookies',
+    { label: 'Política de privacidad', to: '/legal/privacidad' },
+    { label: 'Condiciones generales', to: '/legal/condiciones-generales' },
+    { label: 'Condiciones particulares', to: '/legal/condiciones-particulares' },
+    { label: 'Política de cookies', to: '/legal/privacidad#cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }

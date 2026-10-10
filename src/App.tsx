@@ -9,6 +9,7 @@ import { ChallengePage } from './pages/ChallengePage'
 import { CompleteProfilePage } from './pages/CompleteProfilePage'
 import { HomePage } from './pages/HomePage'
 import { LandingPage } from './pages/LandingPage'
+import { LegalPage } from './pages/LegalPage'
 import { LoginPage } from './pages/LoginPage'
 import { MePage } from './pages/MePage'
 import { RegisterAdminPage } from './pages/RegisterAdminPage'
@@ -35,6 +36,7 @@ export default function App() {
     <AppFrame>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/legal/:slug" element={<LegalPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register-admin" element={<RegisterAdminPage />} />
