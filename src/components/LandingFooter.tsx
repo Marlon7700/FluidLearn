@@ -9,7 +9,6 @@ import {
 import { START_HREFS, zipMenuLinks } from '../lib/landingMenuLinks'
 
 type Props = {
-  /** Si se pasa, usa ese idioma; si no, lee el de la landing */
   lang?: LandingLangCode
 }
 
@@ -22,17 +21,17 @@ export function LandingFooter({ lang: langProp }: Props) {
   return (
     <footer
       id="contacto"
-      className="relative overflow-hidden bg-[#141820] text-white"
+      className="relative mt-auto w-full max-w-full shrink-0 border-0 bg-[#141820] text-white"
       style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
     >
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr_1.6fr]">
-          <div>
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="landing-reveal" data-reveal style={{ ['--reveal-delay' as string]: '40ms' }}>
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="" width={48} height={48} className="rounded-full object-cover" />
-              <div>
+              <img src="/logo.png" alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
+              <div className="min-w-0">
                 <p className="text-lg font-bold">FluidLearn</p>
-                <p className="text-[11px] uppercase tracking-wide text-white/60">{t.brandTagline}</p>
+                <p className="text-xs uppercase leading-snug tracking-wide text-white/60">{t.brandTagline}</p>
               </div>
             </div>
             <div className="mt-5 flex flex-wrap gap-2.5" aria-label="Social">
@@ -53,16 +52,16 @@ export function LandingFooter({ lang: langProp }: Props) {
               </SocialHref>
             </div>
             <a
-              className="mt-4 inline-block text-sm text-white/70 underline-offset-2 hover:text-white hover:underline"
+              className="mt-4 inline-block text-base text-white/70 underline-offset-2 hover:text-white hover:underline"
               href="mailto:info@fluidlearn.com"
             >
               info@fluidlearn.com
             </a>
           </div>
 
-          <div>
-            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-white">{t.footerWhoTitle}</p>
-            <ul className="space-y-2.5 text-sm text-white/65">
+          <div className="landing-reveal" data-reveal style={{ ['--reveal-delay' as string]: '120ms' }}>
+            <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerWhoTitle}</p>
+            <ul className="space-y-2.5 text-base text-white/65">
               {t.footerWhoLinks.map((label) => (
                 <li key={label}>
                   <Link to="/" className="transition hover:text-white">
@@ -75,7 +74,7 @@ export function LandingFooter({ lang: langProp }: Props) {
             <div className="relative mt-6">
               <button
                 type="button"
-                className="inline-flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-left text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white/10"
+                className="inline-flex w-full max-w-xs items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-left text-base font-bold uppercase tracking-wide text-white transition hover:bg-white/10"
                 aria-expanded={startOpen}
                 onClick={() => setStartOpen((o) => !o)}
               >
@@ -83,7 +82,7 @@ export function LandingFooter({ lang: langProp }: Props) {
                 <ChevronDown size={18} className={`shrink-0 transition ${startOpen ? 'rotate-180' : ''}`} aria-hidden />
               </button>
               {startOpen && (
-                <ul className="mt-2 overflow-hidden rounded-xl border border-white/10 bg-white py-1 text-[#334155] shadow-xl">
+                <ul className="mt-2 max-w-xs overflow-hidden rounded-xl border border-white/10 bg-white py-1 text-[#334155] shadow-xl">
                   {startLinks.map((item) => (
                     <li key={item.label}>
                       {item.href.startsWith('/') ? (
@@ -110,9 +109,13 @@ export function LandingFooter({ lang: langProp }: Props) {
             </div>
           </div>
 
-          <div>
-            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-white">{t.footerResourcesTitle}</p>
-            <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-sm text-white/65 sm:grid-cols-2 md:grid-cols-3">
+          <div
+            className="landing-reveal md:col-span-2 lg:col-span-1"
+            data-reveal
+            style={{ ['--reveal-delay' as string]: '200ms' }}
+          >
+            <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerResourcesTitle}</p>
+            <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-base text-white/65 sm:grid-cols-2">
               {t.footerResourceLinks.map((label) => (
                 <Link key={label} to="/" className="transition hover:text-white">
                   {label}
@@ -122,10 +125,14 @@ export function LandingFooter({ lang: langProp }: Props) {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/50">{t.footerCopyright}</p>
+        <div
+          className="landing-reveal mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between"
+          data-reveal
+          style={{ ['--reveal-delay' as string]: '80ms' }}
+        >
+          <p className="text-sm text-white/50">{t.footerCopyright}</p>
           <nav
-            className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-semibold uppercase tracking-wide text-white/80"
+            className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-wide text-white/80 sm:text-sm"
             aria-label="Legal"
           >
             {t.footerLegal.map((item) => (

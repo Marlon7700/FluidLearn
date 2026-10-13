@@ -32,14 +32,16 @@ export function LandingAccessibilityRail({
 }: Props) {
   return (
     <div
-      className="landing-access-rail fixed right-0 top-1/2 z-[45] flex -translate-y-1/2 flex-col items-center gap-2 rounded-l-2xl border border-r-0 border-white/20 bg-[#0D1B2E]/95 py-3 shadow-xl backdrop-blur-md lg:top-[5.75rem] lg:translate-y-0"
+      className="landing-access-rail fixed top-1/2 z-[45] flex -translate-y-1/2 flex-col items-center gap-2 rounded-l-2xl border-0 bg-[#0D1B2E]/95 py-3 shadow-xl backdrop-blur-md lg:top-[6.25rem] lg:translate-y-0"
       style={{
-        paddingRight: 'max(6px, env(safe-area-inset-right))',
+        right: 'max(0px, env(safe-area-inset-right))',
+        paddingRight: '6px',
         paddingLeft: '6px',
       }}
       aria-label={fontSizeLabel}
     >
-      <div className="flex w-full flex-col items-center gap-1.5 border-b border-white/15 pb-2.5">
+      {/* Idioma solo en móvil/tablet (en escritorio xl+ va en el navbar) */}
+      <div className="flex w-full flex-col items-center gap-1.5 border-b border-white/15 pb-2.5 xl:hidden">
         <Languages size={22} className="text-[#98E7FF]" aria-hidden />
         <LandingLanguageSelect
           compact

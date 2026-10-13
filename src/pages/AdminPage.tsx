@@ -1,7 +1,9 @@
 import { collection, onSnapshot } from 'firebase/firestore'
 import { Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
+import { FluidLearnLoadingOverlay } from '../components/FluidLearnLoadingOverlay'
 import { Logo } from '../components/Logo'
+import { useTabLoading } from '../components/RouteLoadingOverlay'
 import { useAuth } from '../context/AuthContext'
 import { db } from '../firebase'
 import {
@@ -27,6 +29,7 @@ const emptyForm = {
 export function AdminPage() {
   const { profile, signOut } = useAuth()
   const [tab, setTab] = useState<'students' | 'content'>('students')
+  const { loading: tabLoading, startLoading: startTabLoading } = useTabLoading()
   const [rows, setRows] = useState<StudentRow[]>([])
   const [modal, setModal] = useState<ModalMode>(null)
   const [editing, setEditing] = useState<StudentRow | null>(null)
@@ -135,8 +138,15 @@ export function AdminPage() {
     }
   }
 
+  function selectTab(next: 'students' | 'content') {
+    if (next === tab || tabLoading) return
+    startTabLoading()
+    setTab(next)
+  }
+
   return (
     <div className="min-h-svh bg-scaffold dark:bg-[#0F1728]">
+      <FluidLearnLoadingOverlay show={tabLoading} />
       <header className="border-b border-[#E4EBF5] bg-white px-4 py-3 dark:border-[#2A3650] dark:bg-[#1A2438] lg:px-10">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
@@ -154,21 +164,23 @@ export function AdminPage() {
           <button
             type="button"
             className={`rounded-xl px-4 py-2 font-semibold ${tab === 'students' ? 'bg-brand text-white' : 'bg-slate-100 dark:bg-[#243044] dark:text-[#E8EEF8]'}`}
-            onClick={() => setTab('students')}
+            onClick={() => selectTab('students')}
           >
             Estudiantes
           </button>
           <button
             type="button"
             className={`rounded-xl px-4 py-2 font-semibold ${tab === 'content' ? 'bg-brand text-white' : 'bg-slate-100 dark:bg-[#243044] dark:text-[#E8EEF8]'}`}
-            onClick={() => setTab('content')}
+            onClick={() => selectTab('content')}
           >
             Contenido
           </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 lg:px-10">
+      <main
+        className={`mx-auto max-w-7xl px-4 py-6 lg:px-10 ${tabLoading ? 'pointer-events-none select-none opacity-60' : ''}`}
+      >
         {ok && (
           <p className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
             {ok}

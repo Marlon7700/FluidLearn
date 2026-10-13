@@ -13,7 +13,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  max-width: 100%;
 }
 
 html,
@@ -22,6 +22,7 @@ body,
   min-height: 100%;
   min-height: 100svh;
   margin: 0;
+  max-width: 100%;
 }
 
 body {
@@ -30,6 +31,62 @@ body {
   color: #162a4e;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.45s ease, color 0.45s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+}
+
+/* Landing: fondo oscuro sin franjas blancas arriba/abajo */
+html.landing-page {
+  scroll-behavior: auto;
+  background: #0d1b2e !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: none;
+}
+
+html.landing-page body,
+html.landing-page #root,
+html.landing-page .app-frame {
+  /* !important: gana a bg-[#EEF3FA] de Tailwind en AppFrame */
+  background: #0d1b2e !important;
+  background-color: #0d1b2e !important;
+}
+
+html.landing-page body {
+  overflow-x: hidden;
+  overflow-y: visible;
+  height: auto;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+html.landing-page #root,
+html.landing-page .app-frame {
+  overflow: visible;
+  height: auto;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Barra de scroll limpia, sin “doble línea” */
+html.landing-page::-webkit-scrollbar {
+  width: 10px;
+}
+
+html.landing-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.landing-page::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 html.dark body {
@@ -148,7 +205,82 @@ button {
 /* Landing FluidLearn */
 .landing-root {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: visible;
+  position: relative;
+  background: #0d1b2e;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.landing-navbar {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background: #0d1b2e;
+  border-bottom-left-radius: 1.75rem;
+  border-bottom-right-radius: 1.75rem;
+  /* Sombra hacia abajo + sello oscuro hacia arriba (tapa franja blanca) */
+  box-shadow:
+    0 -12px 0 0 #0d1b2e,
+    0 8px 28px rgba(0, 0, 0, 0.28);
+  /* Tamaño fijo: +A/−A no debe deformar la barra */
+  font-size: 16px;
+  line-height: 1.25;
+  zoom: 1;
+}
+
+/* Extiende el color del navbar por encima del viewport (anti-línea blanca) */
+.landing-navbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -40px;
+  height: 40px;
+  background: #0d1b2e;
+  pointer-events: none;
+}
+
+@media (max-width: 639px) {
+  .landing-navbar {
+    border-bottom-left-radius: 1.25rem;
+    border-bottom-right-radius: 1.25rem;
+  }
+}
+
+/* Logo navbar sin animación continua (evita tirones al hacer scroll) */
+.landing-navbar .landing-logo-spin {
+  animation: none;
+}
+
+/* Contenido escalable (+A/−A) sin afectar el navbar fijo */
+.landing-content-scale {
+  width: 100%;
+}
+
+@supports not (zoom: 1) {
+  .landing-content-scale {
+    font-size: calc(1rem * var(--landing-font-scale, 1));
+  }
+}
+
+/* Panel de accesibilidad: tamaño fijo (no escala con +A/−A) */
+.landing-access-rail {
+  box-sizing: border-box;
+  font-size: 16px;
+  zoom: 1;
 }
 
 .landing-hero-img {
@@ -268,6 +400,88 @@ button {
   animation-delay: 0.24s;
 }
 
+/* Letras del hero: salen una por una */
+@keyframes landing-letter-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.4em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.landing-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: landing-letter-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--letter-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-letter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* Aparición escalonada (hero + secciones) — GPU, sin librerías */
+.landing-reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.landing-reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.landing-reveal.is-in {
+  will-change: auto;
+}
+
+/* Contenedor: hijos salen uno tras otro al hacerse visible */
+.landing-reveal-group.is-in > [data-reveal-child] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.landing-reveal-group > [data-reveal-child] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Filas de tabla: solo opacity (transform en <tr> es poco fiable) */
+.landing-reveal-group > tr[data-reveal-child],
+.landing-reveal-group tbody > tr[data-reveal-child],
+.landing-reveal-group thead > tr[data-reveal-child] {
+  transform: none;
+}
+
+.landing-reveal-group.is-in > tr[data-reveal-child],
+.landing-reveal-group.is-in tbody > tr[data-reveal-child],
+.landing-reveal-group.is-in thead > tr[data-reveal-child] {
+  transform: none;
+}
+
+/* Secciones con menos trabajo de paint mientras no se ven */
+.landing-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
 .landing-bot-pulse {
   animation: landing-bot-pulse 2.2s ease-out infinite;
 }
@@ -361,5 +575,12 @@ button {
   .landing-lang-spinner,
   .landing-drawer-in {
     animation: none;
+  }
+
+  .landing-reveal,
+  .landing-reveal-group > [data-reveal-child] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

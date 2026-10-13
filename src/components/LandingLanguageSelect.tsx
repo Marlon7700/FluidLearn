@@ -68,12 +68,12 @@ export function LandingLanguageSelect({
       <button
         type="button"
         disabled={disabled}
-        className={`inline-flex items-center justify-center gap-1 font-bold uppercase tracking-wide text-[#98E7FF] transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF6B2C] disabled:opacity-50 ${
+        className={`inline-flex items-center justify-center gap-1 font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00AEEF] disabled:opacity-50 ${
           rail
-            ? 'h-12 w-full min-w-[3.25rem] rounded-xl bg-white/15 px-2 text-[15px]'
+            ? 'h-12 w-full min-w-[3.25rem] rounded-xl bg-white/15 px-2 text-[15px] font-bold uppercase tracking-wide text-[#98E7FF] hover:bg-white/10'
             : compact
-              ? 'max-w-[100px] rounded-lg bg-white/10 px-2 py-2 text-sm sm:max-w-none'
-              : 'max-w-[100px] rounded-lg px-1.5 py-1.5 text-xs sm:max-w-none sm:px-2'
+              ? 'max-w-[100px] rounded-lg bg-white/10 px-2 py-2 text-sm font-bold uppercase tracking-wide text-[#98E7FF] hover:bg-white/10 sm:max-w-none'
+              : 'rounded-md px-1.5 py-1.5 text-sm text-white hover:text-[#98E7FF] sm:px-2'
         }`}
         title={current.label}
         aria-haspopup="listbox"
@@ -82,7 +82,9 @@ export function LandingLanguageSelect({
         aria-label={selectLabel}
         onClick={() => setOpen((o) => !o)}
       >
-        <span className={compact ? 'truncate' : ''}>{compact ? SHORT[value] : current.label}</span>
+        <span className={compact || rail ? 'truncate' : 'capitalize'}>
+          {compact || rail ? SHORT[value] : current.label.charAt(0) + current.label.slice(1).toLowerCase()}
+        </span>
         <ChevronDown size={14} className={`shrink-0 transition ${open ? 'rotate-180' : ''}`} aria-hidden />
       </button>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Menu, Moon, Sun, X } from 'lucide-react'
 import { LandingFooter } from '../components/LandingFooter'
+import { LandingMobileDrawer } from '../components/LandingMobileDrawer'
 import { useTheme } from '../context/ThemeContext'
 import { getLegalDoc, type LegalBlock } from '../lib/legalContent'
 
@@ -88,7 +89,6 @@ export function LegalPage() {
 
   return (
     <div className="min-h-svh bg-white text-[#0D1B2E] dark:bg-[#0F1728] dark:text-[#E8EEF8]">
-      {/* Header: azul oscuro + blanco (misma paleta FluidLearn) */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0D1B2E] text-white shadow-md">
         <div
           className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6"
@@ -116,9 +116,7 @@ export function LegalPage() {
                   key={item.to}
                   to={item.to}
                   className={`whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-medium transition xl:text-[15px] ${
-                    active
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/85 hover:bg-white/10 hover:text-white'
+                    active ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {item.label}
@@ -152,48 +150,23 @@ export function LegalPage() {
               type="button"
               className="rounded-lg p-2 hover:bg-white/10 lg:hidden"
               aria-expanded={menuOpen}
+              aria-controls="landing-side-drawer"
               aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
               onClick={() => setMenuOpen((o) => !o)}
             >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
-
-        {menuOpen && (
-          <nav className="border-t border-white/10 bg-[#0D1B2E] px-4 py-3 lg:hidden" aria-label="Documentos legales">
-            <ul className="space-y-1">
-              {NAV_LINKS.map((item) => {
-                const active = item.to.endsWith(doc.slug)
-                return (
-                  <li key={item.to}>
-                    <Link
-                      to={item.to}
-                      className={`block rounded-lg px-3 py-3 text-[15px] font-medium ${
-                        active ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10'
-                      }`}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                )
-              })}
-              <li>
-                <Link
-                  to="/login"
-                  className="mt-2 block rounded-full border border-white/50 px-3 py-2.5 text-center text-sm font-bold uppercase sm:hidden"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Entra
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        )}
       </header>
 
-      {/* Banner azul oscuro + título blanco */}
+      <LandingMobileDrawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        sectionMode="route"
+        activeLegalSlug={doc.slug}
+      />
+
       <div className="bg-[#0D1B2E]">
         <div className="mx-auto flex min-h-[7.5rem] max-w-6xl items-center justify-center px-4 py-8 sm:min-h-[9rem] sm:px-6 sm:py-10 md:min-h-[10rem]">
           <h1 className="text-center text-xl font-extrabold uppercase leading-tight tracking-wide text-white sm:text-2xl md:text-3xl lg:text-[2.1rem]">
@@ -202,10 +175,8 @@ export function LegalPage() {
         </div>
       </div>
 
-      {/* Franja acento cian (marca FluidLearn) */}
       <div className="h-1 bg-[#98E7FF]" aria-hidden />
 
-      {/* Contenido blanco / fondo app */}
       <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8 sm:py-14 md:py-16">
         <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-[15px]">{doc.subtitle}</p>
         <p className="mt-1 text-xs font-medium text-slate-400">{doc.updated}</p>

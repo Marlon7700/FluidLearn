@@ -102,6 +102,7 @@ export type LandingDict = {
   compareRows: { feature: string; freeLabel?: string }[]
   uniShort: string
   loadingLang: string
+  loadingTab: string
   selectLang: string
   menuStartTitle: string
   menuStartItems: string[]
@@ -207,6 +208,7 @@ const en: LandingDict = {
   ],
   uniShort: 'Universidad Simón Bolívar – Cúcuta',
   loadingLang: 'Changing language…',
+  loadingTab: 'Loading…',
   selectLang: 'Select language',
   navResourcesFree: 'Free resources',
   menuStartTitle: 'Get started',
@@ -364,6 +366,7 @@ const pt: LandingDict = {
   ],
   uniShort: 'Universidad Simón Bolívar – Cúcuta',
   loadingLang: 'A mudar o idioma…',
+  loadingTab: 'A carregar…',
   selectLang: 'Selecionar idioma',
   navResourcesFree: 'Recursos grátis',
   menuStartTitle: 'Para começar',
@@ -448,6 +451,7 @@ const ptBR: LandingDict = {
   compareSub: 'Se sua instituição precisa de licenças em massa, escolha o Plano Institucional.',
   billHint12: 'Cobrança anual · Você economiza em relação ao pagamento mensal.',
   loadingLang: 'Trocando o idioma…',
+  loadingTab: 'Carregando…',
   menuStartTitle: 'Para começar',
   menuCourseTitle: 'Nosso curso',
   menuResourcesTitle: 'Aprenda mais',
@@ -544,6 +548,7 @@ const it: LandingDict = {
   ],
   uniShort: 'Universidad Simón Bolívar – Cúcuta',
   loadingLang: 'Cambio lingua…',
+  loadingTab: 'Caricamento…',
   selectLang: 'Seleziona lingua',
   navResourcesFree: 'Risorse gratuite',
   menuStartTitle: 'Per iniziare',
@@ -694,6 +699,7 @@ const de: LandingDict = {
   ],
   uniShort: 'Universidad Simón Bolívar – Cúcuta',
   loadingLang: 'Sprache wird gewechselt…',
+  loadingTab: 'Wird geladen…',
   selectLang: 'Sprache wählen',
   navResourcesFree: 'Kostenlose Ressourcen',
   menuStartTitle: 'Loslegen',
@@ -844,6 +850,7 @@ const es: LandingDict = {
   ],
   uniShort: 'Universidad Simón Bolívar – Cúcuta',
   loadingLang: 'Cambiando idioma…',
+  loadingTab: 'Cargando…',
   selectLang: 'Seleccionar idioma',
   navResourcesFree: 'Recursos gratis',
   menuStartTitle: 'Para empezar',

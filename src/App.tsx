@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useEffect } from 'react'
 import { AppFrame } from './components/AppFrame'
+import { FluidLearnLoadingOverlay } from './components/FluidLearnLoadingOverlay'
+import { RouteLoadingOverlay } from './components/RouteLoadingOverlay'
 import { AppShell } from './components/AppShell'
 import { useAuth } from './context/AuthContext'
 import { loadLocalSkillQuestions } from './lib/localSkillQuestions'
@@ -19,7 +21,7 @@ import { SkillPage } from './pages/SkillPage'
 function Gate() {
   const { user, loading, isAdmin, needsProfile } = useAuth()
   if (loading) {
-    return <div className="grid min-h-svh place-items-center bg-[#0D1B2E] text-[#98E7FF]">FluidLearn</div>
+    return <FluidLearnLoadingOverlay show message="FluidLearn" />
   }
   if (!user) return <Navigate to="/login" replace />
   if (isAdmin) return <AdminPage />
@@ -34,6 +36,7 @@ export default function App() {
 
   return (
     <AppFrame>
+      <RouteLoadingOverlay />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/legal/:slug" element={<LegalPage />} />

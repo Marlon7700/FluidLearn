@@ -102,7 +102,13 @@ export function LandingChatbot() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+    <div
+      className="fixed z-50 flex flex-col items-end gap-3"
+      style={{
+        bottom: 'max(1rem, env(safe-area-inset-bottom))',
+        right: 'max(1rem, env(safe-area-inset-right))',
+      }}
+    >
       {open && (
         <div
           id={panelId}
