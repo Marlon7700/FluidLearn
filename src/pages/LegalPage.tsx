@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { Menu, Moon, Sun, X } from 'lucide-react'
 import { LandingFooter } from '../components/LandingFooter'
-import { LandingMobileDrawer } from '../components/LandingMobileDrawer'
-import { useTheme } from '../context/ThemeContext'
+import { LandingNavbar } from '../components/LandingNavbar'
+import {
+  getLandingDict,
+  htmlLangFor,
+  readLandingLang,
+  saveLandingLang,
+  type LandingLangCode,
+} from '../lib/landingI18n'
 import { getLegalDoc, type LegalBlock } from '../lib/legalContent'
 
 const NAV_LINKS = [
-  { to: '/legal/condiciones-particulares', label: 'Condiciones particulares' },
-  { to: '/legal/condiciones-generales', label: 'Condiciones generales' },
   { to: '/legal/privacidad', label: 'Política de privacidad' },
+  { to: '/legal/condiciones-generales', label: 'Condiciones generales' },
+  { to: '/legal/condiciones-particulares', label: 'Condiciones particulares' },
+  { to: '/legal/cookies', label: 'Política de cookies' },
 ] as const
 
 const EMAIL_PART = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -21,7 +27,7 @@ function linkify(text: string) {
       <a
         key={`${part}-${i}`}
         href={`mailto:${part}`}
-        className="font-medium text-[#1967D2] underline-offset-2 hover:underline dark:text-[#98E7FF]"
+        className="font-medium text-brand underline-offset-2 hover:underline dark:text-cyan"
       >
         {part}
       </a>
@@ -44,7 +50,7 @@ function Block({ block }: { block: LegalBlock }) {
   }
   if (block.type === 'h3') {
     return (
-      <h3 className="mt-7 text-base font-bold uppercase tracking-wide text-[#0D1B2E] dark:text-[#98E7FF] sm:text-lg">
+      <h3 className="mt-7 text-base font-bold uppercase tracking-wide text-[#0D1B2E] dark:text-cyan sm:text-lg">
         {block.text}
       </h3>
     )
@@ -54,7 +60,7 @@ function Block({ block }: { block: LegalBlock }) {
       <ul className="mt-4 space-y-3 text-[15px] leading-[1.75] text-[#334155] dark:text-[#CBD5E1] sm:text-base">
         {block.items.map((item) => (
           <li key={item.slice(0, 56)} className="flex gap-3">
-            <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1967D2] dark:bg-[#98E7FF]" aria-hidden />
+            <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand dark:bg-cyan" aria-hidden />
             <span>{linkify(item)}</span>
           </li>
         ))}
@@ -69,113 +75,65 @@ function Block({ block }: { block: LegalBlock }) {
 export function LegalPage() {
   const { slug = '' } = useParams<{ slug: string }>()
   const doc = getLegalDoc(slug)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const { dark, toggle } = useTheme()
+  const [lang, setLang] = useState<LandingLangCode>(readLandingLang)
+  const [langLoading, setLangLoading] = useState(false)
+  const t = useMemo(() => getLandingDict(lang), [lang])
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.add('legal-page')
+    document.body.style.backgroundColor = '#0D1B2E'
+    return () => {
+      root.classList.remove('legal-page')
+      document.body.style.backgroundColor = ''
+    }
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.lang = htmlLangFor(lang)
+    saveLandingLang(lang)
+  }, [lang])
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    setMenuOpen(false)
-    if (window.location.hash) {
-      const id = window.location.hash.slice(1)
-      requestAnimationFrame(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-      })
-    }
   }, [slug])
+
+  function changeLanguage(next: LandingLangCode) {
+    if (next === lang || langLoading) return
+    setLangLoading(true)
+    window.setTimeout(() => {
+      setLang(next)
+      window.setTimeout(() => setLangLoading(false), 280)
+    }, 400)
+  }
 
   if (!doc) return <Navigate to="/legal/condiciones-particulares" replace />
 
   const bannerTitle = `${doc.title} FluidLearn`.toUpperCase()
 
   return (
-    <div className="min-h-svh bg-white text-[#0D1B2E] dark:bg-[#0F1728] dark:text-[#E8EEF8]">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0D1B2E] text-white shadow-md">
-        <div
-          className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6"
-          style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-        >
-          <Link to="/" className="flex min-w-0 shrink-0 items-center gap-2" aria-label="FluidLearn">
-            <img
-              src="/logo.png"
-              alt=""
-              width={44}
-              height={44}
-              className="h-10 w-10 rounded-xl object-cover ring-2 ring-[#98E7FF]/40 sm:h-11 sm:w-11"
-            />
-            <span className="truncate text-lg font-bold tracking-tight sm:text-xl">FluidLearn</span>
-          </Link>
+    <div className="legal-page-root min-h-svh bg-white text-[#0D1B2E] dark:bg-[#0F1728] dark:text-[#E8EEF8]">
+      <LandingNavbar lang={lang} onLangChange={changeLanguage} langLoading={langLoading} sectionMode="route" />
 
-          <nav
-            className="hidden flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1"
-            aria-label="Documentos legales"
-          >
-            {NAV_LINKS.map((item) => {
-              const active = item.to.endsWith(doc.slug)
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-medium transition xl:text-[15px] ${
-                    active ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              )
-            })}
-          </nav>
-
-          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-            <Link
-              to="/login"
-              className="hidden rounded-full border border-white/50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-white/10 sm:inline-flex"
-            >
-              Entra
-            </Link>
-            <Link
-              to="/register"
-              className="rounded-full bg-[#FF6B2C] px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-[#e85f24] sm:px-3.5 sm:text-xs"
-            >
-              Empieza gratis
-            </Link>
-            <button
-              type="button"
-              onClick={toggle}
-              className="rounded-full p-2 hover:bg-white/10"
-              aria-label={dark ? 'Modo claro' : 'Modo oscuro'}
-            >
-              {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button
-              type="button"
-              className="rounded-lg p-2 hover:bg-white/10 lg:hidden"
-              aria-expanded={menuOpen}
-              aria-controls="landing-side-drawer"
-              aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-              onClick={() => setMenuOpen((o) => !o)}
-            >
-              {menuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <LandingMobileDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        sectionMode="route"
-        activeLegalSlug={doc.slug}
+      <div
+        className="shrink-0 bg-[#0D1B2E] sm:hidden"
+        style={{ height: 'calc(68px + env(safe-area-inset-top, 0px))' }}
+        aria-hidden
+      />
+      <div
+        className="hidden shrink-0 bg-[#0D1B2E] sm:block"
+        style={{ height: 'calc(76px + env(safe-area-inset-top, 0px))' }}
+        aria-hidden
       />
 
       <div className="bg-[#0D1B2E]">
-        <div className="mx-auto flex min-h-[7.5rem] max-w-6xl items-center justify-center px-4 py-8 sm:min-h-[9rem] sm:px-6 sm:py-10 md:min-h-[10rem]">
-          <h1 className="text-center text-xl font-extrabold uppercase leading-tight tracking-wide text-white sm:text-2xl md:text-3xl lg:text-[2.1rem]">
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
+          <h1 className="text-center text-xl font-extrabold uppercase leading-tight tracking-wide text-white sm:text-2xl md:text-3xl">
             {bannerTitle}
           </h1>
         </div>
       </div>
-
-      <div className="h-1 bg-[#98E7FF]" aria-hidden />
+      <div className="h-1 bg-cyan" aria-hidden />
 
       <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8 sm:py-14 md:py-16">
         <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:text-[15px]">{doc.subtitle}</p>
@@ -187,6 +145,29 @@ export function LegalPage() {
           ))}
         </article>
 
+        <aside className="mt-12 rounded-2xl border border-slate-200 bg-[#F7F9FC] p-5 text-[#0D1B2E] dark:border-[#2A3650] dark:bg-[#141820] dark:text-white sm:p-6">
+          <p className="text-lg font-bold">FluidLearn</p>
+          <p className="mt-1 text-sm uppercase tracking-wide text-slate-500 dark:text-white/60">
+            EdTech · Universidad Simón Bolívar – MacondoLab
+          </p>
+          <a
+            className="mt-3 inline-block text-sm text-brand underline-offset-2 hover:underline dark:text-cyan"
+            href="mailto:info@fluidlearn.com"
+          >
+            info@fluidlearn.com
+          </a>
+          <nav
+            className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-white/80"
+            aria-label={t.footerLegal[0]?.label ? 'Otras políticas' : 'Legal'}
+          >
+            {NAV_LINKS.filter((item) => !item.to.endsWith(doc.slug)).map((item) => (
+              <Link key={item.to} to={item.to} className="hover:text-brand dark:hover:text-white">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+
         <div className="mt-14 border-t border-slate-200 pt-8 text-center dark:border-[#2A3650]">
           <Link
             to="/"
@@ -197,7 +178,7 @@ export function LegalPage() {
         </div>
       </main>
 
-      <LandingFooter />
+      <LandingFooter lang={lang} />
     </div>
   )
 }

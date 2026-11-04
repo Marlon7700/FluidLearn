@@ -34,11 +34,21 @@ export function LandingMobileDrawer({
   const { dark } = useTheme()
   const lang = langProp ?? readLandingLang()
   const t = useMemo(() => getLandingDict(lang), [lang])
-  const [accordion, setAccordion] = useState<'start' | 'course' | 'resources' | 'legal' | null>('start')
+  const [accordion, setAccordion] = useState<'start' | 'course' | 'resources' | 'plans' | 'legal' | null>('start')
 
   const startLinks = useMemo(() => zipMenuLinks(t.menuStartItems, START_HREFS), [t])
   const courseLinks = useMemo(() => zipMenuLinks(t.menuCourseItems, COURSE_HREFS), [t])
   const resourceLinks = useMemo(() => zipMenuLinks(t.menuResourcesItems, RESOURCE_HREFS), [t])
+  const planLinks = useMemo(
+    () => [
+      { label: t.navPromo, href: '#promociones' },
+      { label: t.plansTitle, href: '#planes' },
+      { label: t.planFree, href: '#planes' },
+      { label: t.planPremium, href: '#planes' },
+      { label: t.planInst, href: '#planes' },
+    ],
+    [t],
+  )
   const legalLinks = useMemo(
     () => t.footerLegal.map((item) => ({ label: item.label, href: item.to })),
     [t],
@@ -46,14 +56,12 @@ export function LandingMobileDrawer({
 
   const topLinks = [
     { href: '#inicio', to: '/', label: t.navHome },
-    { href: '#promociones', to: '/', label: t.navPromo },
-    { href: '#planes', to: '/', label: t.navPlans },
     { href: '#contacto', to: '/', label: t.navContact },
   ]
 
   if (!open) return null
 
-  function toggle(key: 'start' | 'course' | 'resources' | 'legal') {
+  function toggle(key: 'start' | 'course' | 'resources' | 'plans' | 'legal') {
     setAccordion((cur) => (cur === key ? null : key))
   }
 
@@ -83,8 +91,8 @@ export function LandingMobileDrawer({
   const itemCls = dark
     ? 'text-white/80 hover:bg-white/10 hover:text-white'
     : 'text-[#334155] hover:bg-slate-100'
-  const activeItem = dark ? 'bg-white/15 text-white' : 'bg-[#E8F0FE] text-[#1967D2]'
-  const chevron = 'text-[#98E7FF]'
+  const activeItem = dark ? 'bg-white/15 text-white' : 'bg-[#E8F0FE] text-brand'
+  const chevron = 'text-cyan'
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label={t.mobileNav}>
@@ -105,7 +113,7 @@ export function LandingMobileDrawer({
         <div className={`flex items-center gap-3 border-b px-4 pb-3 ${border}`}>
           <img src="/logo.png" alt="" width={40} height={40} className="rounded-xl object-cover" />
           <div className="min-w-0 flex-1">
-            <p className={`truncate text-base font-extrabold ${dark ? 'text-white' : 'text-[#1967D2]'}`}>
+            <p className={`truncate text-base font-extrabold ${dark ? 'text-white' : 'text-brand'}`}>
               FluidLearn
             </p>
             <p className={`truncate text-xs ${muted}`}>{t.uniShort}</p>
@@ -178,6 +186,20 @@ export function LandingMobileDrawer({
             items={resourceLinks}
             open={accordion === 'resources'}
             onToggle={() => toggle('resources')}
+            onPick={onClose}
+            resolveHref={sectionHref}
+            useRouter={sectionMode === 'route'}
+            border={border}
+            accordionTitle={accordionTitle}
+            panelBg={panelBg}
+            itemCls={itemCls}
+            chevron={chevron}
+          />
+          <DrawerAccordion
+            title={t.navPlans}
+            items={planLinks}
+            open={accordion === 'plans'}
+            onToggle={() => toggle('plans')}
             onPick={onClose}
             resolveHref={sectionHref}
             useRouter={sectionMode === 'route'}

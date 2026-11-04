@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Building2,
@@ -6,23 +6,17 @@ import {
   CheckCircle2,
   GraduationCap,
   MapPin,
-  Menu,
-  Moon,
   Percent,
   Star,
-  Sun,
   X,
 } from 'lucide-react'
 import { LandingAccessibilityRail } from '../components/LandingAccessibilityRail'
 import { LandingFooter } from '../components/LandingFooter'
-import { LandingLanguageSelect } from '../components/LandingLanguageSelect'
-import { LandingMobileDrawer } from '../components/LandingMobileDrawer'
-import { LandingNavDropdown } from '../components/LandingNavDropdown'
+import { LandingNavbar } from '../components/LandingNavbar'
 import { LandingChatbot } from '../components/LandingChatbot'
 import { FluidLearnLoadingOverlay } from '../components/FluidLearnLoadingOverlay'
 import { LetterReveal, letterRevealDurationMs } from '../components/LetterReveal'
 import { useTabLoading } from '../components/RouteLoadingOverlay'
-import { useTheme } from '../context/ThemeContext'
 import { useLandingReveal } from '../hooks/useLandingReveal'
 import {
   getLandingDict,
@@ -31,19 +25,53 @@ import {
   saveLandingLang,
   type LandingLangCode,
 } from '../lib/landingI18n'
-import {
-  COURSE_HREFS,
-  RESOURCE_HREFS,
-  START_HREFS,
-  zipMenuLinks,
-} from '../lib/landingMenuLinks'
-
 const FONT_KEY = 'fluidlearn-font-scale'
 /** Tamaño base un poco mayor en la landing (navbar no escala) */
 const LANDING_TEXT_BASE = 1.12
-const HERO_PHOTO = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f'
-const heroSrc = (w: number, h?: number) =>
-  `${HERO_PHOTO}?auto=format&fit=crop&w=${w}${h ? `&h=${h}` : ''}&q=80`
+const HERO_VIDEO = '/gemini_generated_video_a299785d.mp4'
+
+function LandingHeroVideo() {
+  const ref = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => {
+      if (document.hidden || motion.matches) {
+        el.pause()
+        return
+      }
+      const play = el.play()
+      if (play) void play.catch(() => {})
+    }
+
+    sync()
+    motion.addEventListener('change', sync)
+    document.addEventListener('visibilitychange', sync)
+    return () => {
+      motion.removeEventListener('change', sync)
+      document.removeEventListener('visibilitychange', sync)
+    }
+  }, [])
+
+  return (
+    <video
+      ref={ref}
+      className="landing-hero-video"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      aria-hidden
+      tabIndex={-1}
+    >
+      <source src={HERO_VIDEO} type="video/mp4" />
+    </video>
+  )
+}
 
 function readScale(): number {
   try {
@@ -56,8 +84,6 @@ function readScale(): number {
 }
 
 export function LandingPage() {
-  const { dark, toggle } = useTheme()
-  const [menuOpen, setMenuOpen] = useState(false)
   const [fontScale, setFontScale] = useState(readScale)
   const [billing, setBilling] = useState<'3m' | '12m' | 'forever'>('12m')
   const [lang, setLang] = useState<LandingLangCode>(readLandingLang)
@@ -75,13 +101,6 @@ export function LandingPage() {
   const heroSubStart = letterRevealDurationMs(t.heroTitle, heroTitleStart, heroTitleCharMs) + 80
   const heroSubCharMs = 22
   const heroCtaDelay = letterRevealDurationMs(t.heroSub, heroSubStart, heroSubCharMs) + 40
-
-  const startLinks = useMemo(() => zipMenuLinks(t.menuStartItems, START_HREFS), [t])
-  const courseLinks = useMemo(() => zipMenuLinks(t.menuCourseItems, COURSE_HREFS), [t])
-  const resourceLinks = useMemo(() => zipMenuLinks(t.menuResourcesItems, RESOURCE_HREFS), [t])
-
-  const navLinkClass =
-    'whitespace-nowrap px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition hover:text-[#98E7FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#98E7FF] xl:px-3 xl:text-[12px]'
 
   /**
    * Escala solo el contenido (no el navbar): si se cambia fontSize de <html>,
@@ -127,15 +146,6 @@ export function LandingPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (!menuOpen) return
-    const prev = document.documentElement.style.overflow
-    document.documentElement.style.overflow = 'hidden'
-    return () => {
-      document.documentElement.style.overflow = prev
-    }
-  }, [menuOpen])
-
   function bumpFont(delta: number) {
     setFontScale((s) => {
       const next = Math.min(1.4, Math.max(0.85, Math.round((s + delta) * 100) / 100))
@@ -147,7 +157,6 @@ export function LandingPage() {
   function changeLanguage(next: LandingLangCode) {
     if (next === lang || langLoading) return
     setLangLoading(true)
-    setMenuOpen(false)
     window.setTimeout(() => {
       setLang(next)
       window.setTimeout(() => setLangLoading(false), 280)
@@ -174,10 +183,12 @@ export function LandingPage() {
 
       <a
         href="#contenido"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[#FF6B2C] focus:px-4 focus:py-2 focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-[#FF6B2C] focus:px-4 focus:py-2 focus:text-white"
       >
         {t.skip}
       </a>
+
+      <LandingNavbar lang={lang} onLangChange={changeLanguage} langLoading={langLoading} sectionMode="hash" />
 
       <LandingAccessibilityRail
         lang={lang}
@@ -193,155 +204,25 @@ export function LandingPage() {
         onIncreaseFont={() => bumpFont(0.1)}
       />
 
-      <header
-        className="landing-navbar text-white"
-        style={{ paddingTop: 'env(safe-area-inset-top, 0px)', top: 0, margin: 0 }}
-      >
-        <div className="mx-auto flex h-[68px] w-full max-w-[1400px] items-center justify-between gap-3 pl-2 pr-4 sm:h-[76px] sm:pl-3 sm:pr-6 lg:pl-4 lg:pr-8">
-          {/* Logo */}
-          <Link to="/" className="flex min-w-0 shrink-0 items-center gap-2.5" aria-label="FluidLearn">
-            <img
-              src="/logo.png"
-              alt=""
-              width={44}
-              height={44}
-              className="landing-logo-spin h-10 w-10 shrink-0 rounded-xl object-cover sm:h-11 sm:w-11"
-            />
-            <span className="truncate text-[18px] font-extrabold tracking-tight sm:text-[20px]">
-              Fluid<span className="text-[#98E7FF]">Learn</span>
-            </span>
-          </Link>
-
-          {/* Centro: menús FluidLearn (misma info / desplegables) */}
-          <nav
-            className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-visible lg:flex xl:gap-2"
-            aria-label={t.navAria}
-          >
-            <a href="#inicio" className={navLinkClass}>
-              {t.navHome}
-            </a>
-            <LandingNavDropdown label={t.menuStartTitle} items={startLinks} uppercase />
-            <LandingNavDropdown label={t.menuCourseTitle} items={courseLinks} uppercase />
-            <LandingNavDropdown label={t.menuResourcesTitle} items={resourceLinks} uppercase />
-            <a href="#promociones" className={navLinkClass}>
-              {t.navPromo}
-            </a>
-            <a href="#planes" className={navLinkClass}>
-              {t.navPlans}
-            </a>
-            <a href="#contacto" className={navLinkClass}>
-              {t.navContact}
-            </a>
-          </nav>
-
-          {/* Derecha: Accede · Regístrate (píldora) · idioma · tema */}
-          <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-4">
-            <Link
-              to="/login"
-              className="whitespace-nowrap text-sm font-semibold text-white transition hover:text-[#98E7FF]"
-            >
-              {t.login}
-            </Link>
-            <Link
-              to="/register"
-              className="whitespace-nowrap rounded-full bg-[#00AEEF] px-5 py-2.5 text-sm font-bold text-[#0D1B2E] shadow-sm transition hover:bg-[#33c0f5]"
-            >
-              {t.register}
-            </Link>
-            <LandingLanguageSelect
-              value={lang}
-              onChange={changeLanguage}
-              disabled={langLoading}
-              selectLabel={t.selectLang}
-            />
-            <button
-              type="button"
-              onClick={toggle}
-              className="rounded-full p-2 hover:bg-white/10"
-              aria-label={dark ? t.lightOn : t.darkOn}
-            >
-              {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-
-          {/* Móvil / tablet */}
-          <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2 lg:hidden">
-            <Link
-              to="/login"
-              className="hidden whitespace-nowrap px-1 text-sm font-semibold text-white sm:inline"
-            >
-              {t.login}
-            </Link>
-            <Link
-              to="/register"
-              className="rounded-full bg-[#00AEEF] px-3.5 py-2 text-[11px] font-bold text-[#0D1B2E] sm:px-4 sm:text-xs"
-            >
-              {t.register}
-            </Link>
-            <button
-              type="button"
-              onClick={toggle}
-              className="rounded-full p-2 hover:bg-white/10"
-              aria-label={dark ? t.lightOn : t.darkOn}
-            >
-              {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button
-              type="button"
-              className="shrink-0 rounded-lg p-2 hover:bg-white/10"
-              aria-expanded={menuOpen}
-              aria-controls="landing-side-drawer"
-              aria-label={menuOpen ? t.closeMenu : t.openMenu}
-              onClick={() => setMenuOpen((o) => !o)}
-            >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <LandingMobileDrawer open={menuOpen} onClose={() => setMenuOpen(false)} lang={lang} sectionMode="hash" />
-
       <main
         id="contenido"
         className={`flex-1 bg-[#F7F9FC] dark:bg-[#0A1220] ${langLoading || tabLoading ? 'pointer-events-none select-none opacity-60' : ''}`}
       >
-        {/* Espacio fijo bajo el navbar (px → no se deforma con +A/−A) */}
-        <div
-          className="shrink-0 sm:hidden"
-          style={{ height: 'calc(68px + env(safe-area-inset-top, 0px))' }}
-          aria-hidden
-        />
-        <div
-          className="hidden shrink-0 sm:block"
-          style={{ height: 'calc(76px + env(safe-area-inset-top, 0px))' }}
-          aria-hidden
-        />
         <div
           className="landing-content-scale origin-top"
           style={{ zoom: contentZoom } as CSSProperties}
         >
         <section
           id="inicio"
-          className="landing-hero relative isolate min-h-[100svh] overflow-hidden"
+          className="landing-hero relative isolate min-h-svh overflow-hidden"
           aria-labelledby="hero-title"
         >
-          <picture className="pointer-events-none absolute inset-0">
-            <source media="(max-width: 480px)" srcSet={heroSrc(640, 960)} />
-            <source media="(max-width: 768px)" srcSet={heroSrc(960, 1280)} />
-            <source media="(max-width: 1200px)" srcSet={heroSrc(1400)} />
-            <img
-              src={heroSrc(2000)}
-              alt=""
-              className="landing-hero-img"
-              fetchPriority="high"
-              decoding="async"
-              sizes="100vw"
-            />
-          </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0D1B2E]/93 via-[#0D1B2E]/78 to-[#0D1B2E]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B2E]/50 via-transparent to-[#0D1B2E]/30" />
-          <div className="relative mx-auto flex min-h-[inherit] max-w-6xl flex-col justify-center px-4 py-14 pr-16 sm:px-6 sm:py-20 sm:pr-20 lg:px-10 lg:py-24 lg:pr-24 xl:pr-10">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0D1B2E]" aria-hidden>
+            <LandingHeroVideo />
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-[#0D1B2E]/88 via-[#0D1B2E]/52 to-[#0D1B2E]/18 max-md:from-[#0D1B2E]/82 max-md:via-[#0D1B2E]/48 max-md:to-[#0D1B2E]/28" />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0D1B2E]/72 via-[#0D1B2E]/18 to-[#0D1B2E]/38" />
+          <div className="relative mx-auto flex min-h-[inherit] max-w-6xl flex-col justify-center px-4 py-14 pr-16 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] sm:px-6 sm:py-20 sm:pr-20 sm:pt-[calc(6.25rem+env(safe-area-inset-top,0px))] lg:px-10 lg:py-24 lg:pr-24 xl:pr-10">
             <div
               className="landing-reveal mb-6"
               data-reveal
@@ -352,7 +233,7 @@ export function LandingPage() {
                 alt="FluidLearn"
                 width={72}
                 height={72}
-                className="landing-logo-float h-[72px] w-[72px] rounded-[22%] object-cover shadow-xl"
+                className="landing-logo-float h-18 w-18 rounded-[22%] object-cover shadow-xl"
               />
             </div>
             <LetterReveal
@@ -360,7 +241,8 @@ export function LandingPage() {
               as="h1"
               id="hero-title"
               text={t.heroTitle}
-              className="max-w-xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl"
+              whenVisible
+              className="max-w-[18ch] text-[1.7rem] font-extrabold leading-[1.18] tracking-tight text-white [text-shadow:0_2px_18px_rgba(13,27,46,0.7)] sm:max-w-[22ch] sm:text-4xl md:max-w-[20ch] md:text-[2.75rem] lg:text-5xl"
               startDelayMs={heroTitleStart}
               charMs={heroTitleCharMs}
             />
@@ -368,7 +250,8 @@ export function LandingPage() {
               key={`hero-sub-${lang}`}
               as="p"
               text={t.heroSub}
-              className="mt-4 max-w-lg text-base text-white/85 sm:text-lg"
+              whenVisible
+              className="mt-4 max-w-[36ch] text-base leading-relaxed text-white/90 [text-shadow:0_1px_12px_rgba(13,27,46,0.75)] sm:max-w-[42ch] sm:text-lg"
               startDelayMs={heroSubStart}
               charMs={heroSubCharMs}
             />
@@ -398,14 +281,10 @@ export function LandingPage() {
           className="landing-section mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16"
           aria-labelledby="promo-title"
         >
-          <div className="landing-reveal" data-reveal>
-            <SectionTitle id="promo-title" icon={<Percent className="landing-icon-spin text-[#FF6B2C]" size={22} />}>
-              {t.promoTitle}
-            </SectionTitle>
-          </div>
+          <SectionTitle id="promo-title" text={t.promoTitle} icon={<Percent className="text-[#FF6B2C]" size={22} />} />
           <div className="mt-8 grid overflow-hidden rounded-2xl shadow-lg md:grid-cols-2">
             <div
-              className="landing-reveal bg-[#1967D2] px-6 py-8 text-white sm:px-8"
+              className="landing-reveal bg-brand px-6 py-8 text-white sm:px-8"
               data-reveal
               style={{ '--reveal-delay': '80ms' } as CSSProperties}
             >
@@ -433,15 +312,12 @@ export function LandingPage() {
           aria-labelledby="planes-title"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="landing-reveal" data-reveal>
-              <SectionTitle
-                id="planes-title"
-                icon={<CheckCircle2 className="landing-icon-pulse text-[#1967D2] dark:text-[#98E7FF]" size={22} />}
-              >
-                {t.plansTitle}
-              </SectionTitle>
-            </div>
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
+            <SectionTitle
+              id="planes-title"
+              text={t.plansTitle}
+              icon={<CheckCircle2 className="text-brand dark:text-cyan" size={22} />}
+            />
+            <div className="mt-10 grid gap-5 md:grid-cols-3 perspective-[1100px]">
               <PlanCard
                 tone="free"
                 title={t.planFree}
@@ -476,13 +352,15 @@ export function LandingPage() {
           className="landing-section mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16"
           aria-labelledby="about-title"
         >
-          <h2
+          <LetterReveal
+            key={`about-${lang}`}
+            as="h2"
             id="about-title"
-            className="landing-reveal text-center text-2xl font-extrabold text-[#0D1B2E] dark:text-white sm:text-3xl"
-            data-reveal
-          >
-            {t.aboutTitle}
-          </h2>
+            text={t.aboutTitle}
+            whenVisible
+            charMs={32}
+            className="text-center text-2xl font-extrabold text-[#0D1B2E] dark:text-white sm:text-3xl"
+          />
           <p
             className="landing-reveal mx-auto mt-6 max-w-3xl text-center text-base leading-relaxed text-[#334155] dark:text-[#CBD5E1] sm:text-lg"
             data-reveal
@@ -511,17 +389,19 @@ export function LandingPage() {
           className="landing-section relative overflow-hidden bg-white py-14 dark:bg-[#0F1728] sm:py-16"
           aria-labelledby="compare-title"
         >
-          <div className="pointer-events-none absolute -left-16 top-10 h-40 w-40 rotate-12 rounded-3xl bg-[#1967D2]/10" aria-hidden />
+          <div className="pointer-events-none absolute -left-16 top-10 h-40 w-40 rotate-12 rounded-3xl bg-brand/10" aria-hidden />
           <div className="pointer-events-none absolute -right-10 bottom-16 h-36 w-36 -rotate-12 rounded-3xl bg-[#FF6B2C]/15" aria-hidden />
 
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-            <h2
+            <LetterReveal
+              key={`compare-${lang}`}
+              as="h2"
               id="compare-title"
-              className="landing-reveal mx-auto max-w-3xl text-center text-2xl font-extrabold leading-tight text-[#0D1B2E] dark:text-white sm:text-3xl"
-              data-reveal
-            >
-              {t.compareTitle}
-            </h2>
+              text={t.compareTitle}
+              whenVisible
+              charMs={28}
+              className="mx-auto max-w-3xl text-center text-2xl font-extrabold leading-tight text-[#0D1B2E] dark:text-white sm:text-3xl"
+            />
             <p
               className="landing-reveal mx-auto mt-3 max-w-2xl text-center text-sm text-[#475569] dark:text-[#94A3B8] sm:text-base"
               data-reveal
@@ -594,7 +474,7 @@ export function LandingPage() {
               className="landing-reveal-group mt-8 overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-white shadow-sm dark:border-[#2A3650] dark:bg-[#1A2438]"
               data-reveal
             >
-              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+              <table className="w-full min-w-160 border-collapse text-left text-sm">
                 <caption className="sr-only">{t.compareCaption}</caption>
                 <thead>
                   <tr
@@ -611,7 +491,7 @@ export function LandingPage() {
                         {billing === '3m' ? t.bill3 : billing === '12m' ? t.bill12 : t.billForever}
                       </span>
                     </th>
-                    <th scope="col" className="px-3 py-4 text-center font-bold text-[#1967D2] dark:text-[#98E7FF]">
+                    <th scope="col" className="px-3 py-4 text-center font-bold text-brand dark:text-cyan">
                       {t.colInst}
                       <span className="mt-0.5 block text-xs font-normal text-[#64748B]">{t.licenses}</span>
                     </th>
@@ -705,24 +585,27 @@ function CompareCell({
 
 function SectionTitle({
   id,
-  children,
+  text,
   icon,
 }: {
   id: string
-  children: React.ReactNode
+  text: string
   icon: React.ReactNode
 }) {
   return (
-    <div className="flex items-center justify-center gap-3">
-      <span className="hidden h-px w-12 bg-[#1967D2]/50 sm:block" aria-hidden />
-      <h2
-        id={id}
-        className="inline-flex items-center gap-2 text-center text-2xl font-extrabold text-[#0D1B2E] dark:text-white sm:text-3xl"
-      >
+    <div className="flex items-center justify-center gap-2">
+      <span className="shrink-0" aria-hidden>
         {icon}
-        {children}
-      </h2>
-      <span className="hidden h-px w-12 bg-[#1967D2]/50 sm:block" aria-hidden />
+      </span>
+      <LetterReveal
+        key={text}
+        as="h2"
+        id={id}
+        text={text}
+        whenVisible
+        charMs={32}
+        className="text-center text-2xl font-extrabold text-[#0D1B2E] dark:text-white sm:text-3xl"
+      />
     </div>
   )
 }
@@ -744,18 +627,45 @@ function PlanCard({
   cta: string
   delayMs?: number
 }) {
+  const cardRef = useRef<HTMLElement>(null)
   const shell =
     tone === 'free'
       ? 'bg-white text-[#0D1B2E] dark:bg-[#1A2438] dark:text-[#E8EEF8]'
       : tone === 'premium'
         ? 'bg-[#FF6B2C] text-white'
-        : 'bg-[#1967D2] text-white'
+        : 'bg-brand text-white'
+
+  function onMove(e: MouseEvent<HTMLElement>) {
+    const el = cardRef.current
+    if (!el) return
+    const box = el.getBoundingClientRect()
+    const x = (e.clientX - box.left) / box.width
+    const y = (e.clientY - box.top) / box.height
+    const rx = ((0.5 - y) * 14).toFixed(2)
+    const ry = ((x - 0.5) * 16).toFixed(2)
+    el.style.setProperty('--rx', `${rx}deg`)
+    el.style.setProperty('--ry', `${ry}deg`)
+    el.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`)
+    el.style.setProperty('--my', `${(y * 100).toFixed(1)}%`)
+  }
+
+  function onLeave() {
+    const el = cardRef.current
+    if (!el) return
+    el.style.setProperty('--rx', '0deg')
+    el.style.setProperty('--ry', '0deg')
+  }
+
   return (
     <article
-      className={`landing-reveal landing-reveal-group flex flex-col rounded-2xl p-6 shadow-md ${shell} ${featured ? 'md:-translate-y-2 md:shadow-xl ring-2 ring-[#FF6B2C]/40' : ''}`}
+      ref={cardRef}
+      className={`landing-plan-card landing-reveal landing-reveal-group relative flex flex-col overflow-hidden rounded-2xl p-6 shadow-md ${shell} ${featured ? 'landing-plan-card--featured ring-2 ring-[#FF6B2C]/40' : ''}`}
       data-reveal
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
       style={{ '--reveal-delay': `${delayMs}ms` } as CSSProperties}
     >
+      <span className="landing-plan-shine" aria-hidden />
       <h3
         className="text-lg font-bold"
         data-reveal-child

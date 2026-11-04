@@ -5,7 +5,7 @@ export type LegalBlock =
   | { type: 'h3'; text: string }
 
 export type LegalDoc = {
-  slug: 'condiciones-particulares' | 'condiciones-generales' | 'privacidad'
+  slug: 'condiciones-particulares' | 'condiciones-generales' | 'privacidad' | 'cookies'
   title: string
   subtitle: string
   updated: string
@@ -90,6 +90,15 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
           'Las licencias institucionales permiten homologar horas de práctica independiente y reducir carga presencial.',
           'Incluyen dashboard de alerta temprana para coordinadores académicos.',
           'Adaptable a universidades y colegios de la región.',
+        ],
+      },
+      { type: 'h2', text: 'i) Identidad de FluidLearn' },
+      {
+        type: 'ul',
+        items: [
+          'FluidLearn · EdTech – Universidad Simón Bolívar – MacondoLab',
+          'Correo: info@fluidlearn.com',
+          'Quiénes somos: inglés para empresas, empleo, prensa y centro de ayuda.',
         ],
       },
     ],
@@ -186,6 +195,15 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
       {
         type: 'p',
         text: 'El acceso y uso de FluidLearn se regirá por la legislación colombiana. En caso de conflicto, se aplicarán los mecanismos de resolución previstos por la normativa vigente.',
+      },
+      { type: 'h2', text: '11. Identidad de FluidLearn' },
+      {
+        type: 'ul',
+        items: [
+          'FluidLearn · EdTech – Universidad Simón Bolívar – MacondoLab',
+          'Correo: info@fluidlearn.com',
+          'Quiénes somos: inglés para empresas, empleo, prensa y centro de ayuda.',
+        ],
       },
     ],
   },
@@ -287,11 +305,76 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
         type: 'p',
         text: 'El tratamiento de datos se rige por la legislación colombiana en materia de protección de datos personales (Ley 1581 de 2012 y normas complementarias).',
       },
+      { type: 'h2', text: '10. Identidad de FluidLearn' },
+      {
+        type: 'ul',
+        items: [
+          'FluidLearn · EdTech – Universidad Simón Bolívar – MacondoLab',
+          'Correo: info@fluidlearn.com',
+          'Quiénes somos: inglés para empresas, empleo, prensa y centro de ayuda.',
+        ],
+      },
+    ],
+  },
+
+  cookies: {
+    slug: 'cookies',
+    title: 'Política de Cookies',
+    subtitle: 'FluidLearn · Universidad Simón Bolívar – MacondoLab',
+    updated: 'Actualizado: 2026',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Esta Política de Cookies explica cómo FluidLearn (EdTech de la Universidad Simón Bolívar – MacondoLab) utiliza cookies y tecnologías similares en el sitio web y la aplicación.',
+      },
+      { type: 'h2', text: '1. ¿Qué son las cookies?' },
+      {
+        type: 'p',
+        text: 'Las cookies son pequeños archivos que se guardan en tu dispositivo cuando visitas FluidLearn. Permiten recordar preferencias (idioma, tema, tamaño de texto) y mejorar el funcionamiento de la plataforma.',
+      },
+      { type: 'h2', text: '2. Tipos de cookies que usamos' },
+      {
+        type: 'ul',
+        items: [
+          'Necesarias: inicio de sesión, seguridad y funcionamiento básico de la plataforma.',
+          'Funcionales: idioma, modo claro/oscuro y tamaño de letra.',
+          'Analíticas: medición anónima del uso para optimizar contenidos y rendimiento.',
+        ],
+      },
+      { type: 'h2', text: '3. Datos de contacto de FluidLearn' },
+      {
+        type: 'ul',
+        items: [
+          'FluidLearn · EdTech – Universidad Simón Bolívar – MacondoLab',
+          'Correo: info@fluidlearn.com',
+          'Privacidad: privacidad@fluidlearn.com',
+        ],
+      },
+      { type: 'h2', text: '4. Cómo gestionar las cookies' },
+      {
+        type: 'p',
+        text: 'Puedes configurar o desactivar cookies desde tu navegador. Si las bloqueas por completo, algunas funciones (por ejemplo, mantener la sesión o el idioma) pueden dejar de funcionar.',
+      },
+      { type: 'h2', text: '5. Servicios relacionados' },
+      {
+        type: 'ul',
+        items: [
+          'Google Analytics: análisis estadístico anónimo.',
+          'YouTube: reproducción de videos educativos.',
+          'Chatbot IA: asistencia en la plataforma.',
+        ],
+      },
+      { type: 'h2', text: '6. Más información' },
+      {
+        type: 'p',
+        text: 'Esta política complementa la Política de privacidad, las Condiciones generales y las Condiciones particulares de FluidLearn. Para consultas escribe a info@fluidlearn.com.',
+      },
     ],
   },
 }
 
 export function getLegalDoc(slug: string): LegalDoc | null {
-  if (slug in LEGAL_DOCS) return LEGAL_DOCS[slug as LegalDoc['slug']]
+  const clean = slug.replace(/#.*$/, '').trim()
+  if (clean in LEGAL_DOCS) return LEGAL_DOCS[clean as LegalDoc['slug']]
   return null
 }

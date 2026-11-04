@@ -265,7 +265,7 @@ const en: LandingDict = {
     { label: 'Privacy policy', to: '/legal/privacidad' },
     { label: 'General terms', to: '/legal/condiciones-generales' },
     { label: 'Special conditions', to: '/legal/condiciones-particulares' },
-    { label: 'Cookie policy', to: '/legal/privacidad#cookies' },
+    { label: 'Cookie policy', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -423,7 +423,7 @@ const pt: LandingDict = {
     { label: 'Política de privacidade', to: '/legal/privacidad' },
     { label: 'Condições gerais', to: '/legal/condiciones-generales' },
     { label: 'Condições particulares', to: '/legal/condiciones-particulares' },
-    { label: 'Política de cookies', to: '/legal/privacidad#cookies' },
+    { label: 'Política de cookies', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -605,7 +605,7 @@ const it: LandingDict = {
     { label: 'Privacy policy', to: '/legal/privacidad' },
     { label: 'Condizioni generali', to: '/legal/condiciones-generales' },
     { label: 'Condizioni particolari', to: '/legal/condiciones-particulares' },
-    { label: 'Cookie policy', to: '/legal/privacidad#cookies' },
+    { label: 'Cookie policy', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -756,7 +756,7 @@ const de: LandingDict = {
     { label: 'Datenschutz', to: '/legal/privacidad' },
     { label: 'Nutzungsbedingungen', to: '/legal/condiciones-generales' },
     { label: 'Besondere Bedingungen', to: '/legal/condiciones-particulares' },
-    { label: 'Cookie-Richtlinie', to: '/legal/privacidad#cookies' },
+    { label: 'Cookie-Richtlinie', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }
@@ -907,7 +907,7 @@ const es: LandingDict = {
     { label: 'Política de privacidad', to: '/legal/privacidad' },
     { label: 'Condiciones generales', to: '/legal/condiciones-generales' },
     { label: 'Condiciones particulares', to: '/legal/condiciones-particulares' },
-    { label: 'Política de cookies', to: '/legal/privacidad#cookies' },
+    { label: 'Política de cookies', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
 }

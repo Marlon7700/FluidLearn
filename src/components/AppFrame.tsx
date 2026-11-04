@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 /** Lienzo único para web y APK: pantalla completa, sin marco de teléfono. */
 export function AppFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="app-frame min-h-svh bg-[#EEF3FA] text-[#162A4E] transition-colors duration-500 dark:bg-[#0F1728] dark:text-[#E8EEF8] [.landing-page_&]:bg-[#0D1B2E]">
+    <div className="app-frame min-h-svh bg-[#EEF3FA] text-[#162A4E] transition-colors duration-500 dark:bg-[#0F1728] dark:text-[#E8EEF8] [.landing-page_&]:bg-[#0D1B2E] [.legal-page_&]:bg-[#0D1B2E]">
       {children}
     </div>
   )

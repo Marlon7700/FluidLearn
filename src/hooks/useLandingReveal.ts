@@ -1,8 +1,15 @@
 import { useEffect } from 'react'
 
+function restartLetters(el: HTMLElement) {
+  el.querySelectorAll<HTMLElement>('.landing-letter').forEach((letter) => {
+    letter.style.animation = 'none'
+    void letter.offsetWidth
+    letter.style.animation = ''
+  })
+}
+
 /**
- * Activa `.is-in` en elementos `[data-reveal]` al entrar en viewport.
- * Una sola observación por nodo → fluido y barato.
+ * Reproduce las animaciones cada vez que el bloque entra en pantalla (bajar o volver a subir).
  */
 export function useLandingReveal(deps: unknown[] = []) {
   useEffect(() => {
@@ -11,8 +18,6 @@ export function useLandingReveal(deps: unknown[] = []) {
 
     const nodes = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'))
     if (!nodes.length) return
-
-    nodes.forEach((n) => n.classList.remove('is-in'))
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
@@ -23,25 +28,22 @@ export function useLandingReveal(deps: unknown[] = []) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          entry.target.classList.add('is-in')
-          io.unobserve(entry.target)
+          const el = entry.target as HTMLElement
+          if (entry.isIntersecting) {
+            el.classList.remove('is-in')
+            restartLetters(el)
+            void el.offsetWidth
+            el.classList.add('is-in')
+          } else {
+            el.classList.remove('is-in')
+          }
         }
       },
-      { root: null, rootMargin: '0px 0px -6% 0px', threshold: 0.08 },
+      { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
     )
 
-    for (const node of nodes) {
-      // Hero ya visible: dispara en el siguiente frame
-      const rect = node.getBoundingClientRect()
-      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
-        requestAnimationFrame(() => node.classList.add('is-in'))
-      } else {
-        io.observe(node)
-      }
-    }
-
+    nodes.forEach((n) => io.observe(n))
     return () => io.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps controlan re-scan (idioma, etc.)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 }

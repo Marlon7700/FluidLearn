@@ -52,7 +52,7 @@ export function LandingNavDropdown({ label, items, uppercase }: Props) {
     'block px-5 py-2.5 text-[15px] text-[#334155] transition hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none'
 
   const triggerClass = uppercase
-    ? 'inline-flex items-center gap-1 whitespace-nowrap px-2 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition hover:text-[#98E7FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#98E7FF] xl:px-2.5 xl:text-[12px]'
+    ? 'inline-flex items-center gap-1 whitespace-nowrap px-2 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition hover:text-cyan focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan xl:px-2.5 xl:text-[12px]'
     : 'inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-[15px] font-medium text-white/90 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF6B2C]'
 
   return (

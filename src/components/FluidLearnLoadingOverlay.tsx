@@ -20,7 +20,7 @@ export function FluidLearnLoadingOverlay({ show, message = 'Cargando…' }: Prop
           alt=""
           width={72}
           height={72}
-          className="h-[72px] w-[72px] rounded-2xl object-cover shadow-xl"
+          className="h-18 w-18 rounded-2xl object-cover shadow-xl"
         />
         <span
           className="landing-lang-spinner absolute -inset-2 rounded-3xl border-2 border-transparent border-t-[#98E7FF] border-r-[#FF6B2C]"

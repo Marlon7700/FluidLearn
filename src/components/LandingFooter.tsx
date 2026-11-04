@@ -26,7 +26,7 @@ export function LandingFooter({ lang: langProp }: Props) {
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
         <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-3">
-          <div className="landing-reveal" data-reveal style={{ ['--reveal-delay' as string]: '40ms' }}>
+          <div>
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
               <div className="min-w-0">
@@ -59,7 +59,7 @@ export function LandingFooter({ lang: langProp }: Props) {
             </a>
           </div>
 
-          <div className="landing-reveal" data-reveal style={{ ['--reveal-delay' as string]: '120ms' }}>
+          <div>
             <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerWhoTitle}</p>
             <ul className="space-y-2.5 text-base text-white/65">
               {t.footerWhoLinks.map((label) => (
@@ -109,11 +109,7 @@ export function LandingFooter({ lang: langProp }: Props) {
             </div>
           </div>
 
-          <div
-            className="landing-reveal md:col-span-2 lg:col-span-1"
-            data-reveal
-            style={{ ['--reveal-delay' as string]: '200ms' }}
-          >
+          <div className="md:col-span-2 lg:col-span-1">
             <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerResourcesTitle}</p>
             <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-base text-white/65 sm:grid-cols-2">
               {t.footerResourceLinks.map((label) => (
@@ -125,11 +121,7 @@ export function LandingFooter({ lang: langProp }: Props) {
           </div>
         </div>
 
-        <div
-          className="landing-reveal mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between"
-          data-reveal
-          style={{ ['--reveal-delay' as string]: '80ms' }}
-        >
+        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-white/50">{t.footerCopyright}</p>
           <nav
             className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-wide text-white/80 sm:text-sm"
