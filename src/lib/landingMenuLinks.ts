@@ -4,7 +4,7 @@ export type MenuLink = { label: string; href: string }
 
 /** Para empezar */
 export const START_HREFS = [
-  '#planes', // Test de nivel
+  '/test', // Test de nivel
   '#planes', // Niveles
   '#promociones', // Videos / recursos
   '#planes', // Curso intensivo
@@ -33,6 +33,24 @@ export const RESOURCE_HREFS = [
   '#planes',
   '#planes',
   '#nosotros',
+] as const
+
+/** Recursos del pie: el test de nivel abre la página principal del examen. */
+export const FOOTER_RESOURCE_HREFS = [
+  '/',
+  '/test',
+  '/',
+  '/#planes',
+  '/',
+  '/#nosotros',
+  '/#nosotros',
+  '/',
+  '/',
+  '/',
+  '/',
+  '/',
+  '/',
+  '/',
 ] as const
 
 export function zipMenuLinks(labels: string[], hrefs: readonly string[]): MenuLink[] {

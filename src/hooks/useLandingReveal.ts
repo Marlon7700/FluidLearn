@@ -13,7 +13,7 @@ function restartLetters(el: HTMLElement) {
  */
 export function useLandingReveal(deps: unknown[] = []) {
   useEffect(() => {
-    const root = document.querySelector('.landing-root')
+    const root = document.querySelector('.landing-root, .a1-test-page')
     if (!root) return
 
     const nodes = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'))

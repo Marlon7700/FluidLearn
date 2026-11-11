@@ -6,7 +6,7 @@ import {
   readLandingLang,
   type LandingLangCode,
 } from '../lib/landingI18n'
-import { START_HREFS, zipMenuLinks } from '../lib/landingMenuLinks'
+import { FOOTER_RESOURCE_HREFS, START_HREFS, zipMenuLinks } from '../lib/landingMenuLinks'
 
 type Props = {
   lang?: LandingLangCode
@@ -112,8 +112,12 @@ export function LandingFooter({ lang: langProp }: Props) {
           <div className="md:col-span-2 lg:col-span-1">
             <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerResourcesTitle}</p>
             <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-base text-white/65 sm:grid-cols-2">
-              {t.footerResourceLinks.map((label) => (
-                <Link key={label} to="/" className="transition hover:text-white">
+              {t.footerResourceLinks.map((label, i) => (
+                <Link
+                  key={label}
+                  to={FOOTER_RESOURCE_HREFS[i] ?? '/'}
+                  className="transition hover:text-white"
+                >
                   {label}
                 </Link>
               ))}
