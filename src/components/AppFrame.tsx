@@ -26,16 +26,27 @@ export function Page({
   )
 }
 
-export function AuthCard({ children }: { children: ReactNode }) {
+export function AuthCard({
+  children,
+  className = '',
+  cardClassName = '',
+  decorations,
+}: {
+  children: ReactNode
+  className?: string
+  cardClassName?: string
+  decorations?: ReactNode
+}) {
   return (
     <div
-      className="flex min-h-svh items-center justify-center px-5 py-10"
+      className={`flex min-h-svh items-center justify-center px-5 py-10 ${className}`}
       style={{
         paddingTop: 'max(2.5rem, env(safe-area-inset-top))',
         paddingBottom: 'max(2.5rem, env(safe-area-inset-bottom))',
       }}
     >
-      <div className="w-full max-w-[440px] rounded-[28px] bg-white p-8 shadow-[0_18px_50px_rgba(22,42,78,0.10)] dark:bg-[#1A2438] dark:shadow-none sm:p-10">
+      {decorations}
+      <div className={`relative z-10 w-full max-w-[440px] rounded-[28px] bg-white p-8 shadow-[0_18px_50px_rgba(22,42,78,0.10)] dark:bg-[#1A2438] dark:shadow-none sm:p-10 ${cardClassName}`}>
         {children}
       </div>
     </div>

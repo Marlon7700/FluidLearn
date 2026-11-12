@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, GraduationCap, KeyRound, Lock, Mail, Send, Shield } from 'lucide-react'
 import { AuthCard } from '../components/AppFrame'
+import { AuthAnimatedDecorations } from '../components/AuthAnimatedDecorations'
 import { FieldWithIcon, iconField } from '../components/FieldWithIcon'
 import { GoogleIcon } from '../components/GoogleIcon'
 import { Logo } from '../components/Logo'
@@ -81,7 +82,13 @@ export function LoginPage() {
   }
 
   return (
-    <AuthCard>
+    <AuthCard
+      className={adminMode ? 'login-auth-background admin-auth-background' : 'login-auth-background'}
+      cardClassName="login-auth-card"
+      decorations={
+        <AuthAnimatedDecorations admin={adminMode} />
+      }
+    >
       <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col">
         <div className="mb-6 flex flex-col items-center">
           <Logo size={80} />

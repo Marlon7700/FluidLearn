@@ -12,6 +12,8 @@ import { CompleteProfilePage } from './pages/CompleteProfilePage'
 import { HomePage } from './pages/HomePage'
 import { LandingPage } from './pages/LandingPage'
 import { LevelTestA1Page } from './pages/LevelTestA1Page'
+import { EnglishLevelsPage } from './pages/EnglishLevelsPage'
+import { HowItWorksPage } from './pages/HowItWorksPage'
 import { LevelTestHubPage } from './pages/LevelTestHubPage'
 import { LevelTestA2Page } from './pages/LevelTestA2Page'
 import { LevelTestB1Page } from './pages/LevelTestB1Page'
@@ -44,6 +46,8 @@ export default function App() {
       <RouteLoadingOverlay />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/niveles" element={<EnglishLevelsPage />} />
+        <Route path="/como-funciona" element={<HowItWorksPage />} />
         <Route path="/test" element={<LevelTestHubPage />} />
         <Route path="/test/a1" element={<LevelTestA1Page />} />
         <Route path="/test/a2" element={<LevelTestA2Page />} />

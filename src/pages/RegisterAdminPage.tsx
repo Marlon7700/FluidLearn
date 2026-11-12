@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Building2, Lock, Mail, RefreshCw, ShieldCheck, UserRound } from 'lucide-react'
 import { AuthCard } from '../components/AppFrame'
+import { AuthAnimatedDecorations } from '../components/AuthAnimatedDecorations'
 import { FieldWithIcon, iconField } from '../components/FieldWithIcon'
 import { Logo } from '../components/Logo'
 import { useAuth } from '../context/AuthContext'
@@ -63,7 +64,11 @@ export function RegisterAdminPage() {
       : 'Correo institucional (universidad)'
 
   return (
-    <AuthCard>
+    <AuthCard
+      className="login-auth-background admin-auth-background"
+      cardClassName="login-auth-card"
+      decorations={<AuthAnimatedDecorations admin />}
+    >
       <form onSubmit={(e) => void onSubmit(e)}>
         <div className="mb-6 flex flex-col items-center">
           <Logo size={64} />

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { IdCard, Lock, Mail, UserRound } from 'lucide-react'
 import { AuthCard } from '../components/AppFrame'
+import { AuthAnimatedDecorations } from '../components/AuthAnimatedDecorations'
 import { FieldWithIcon, iconField } from '../components/FieldWithIcon'
 import { GoogleIcon } from '../components/GoogleIcon'
 import { Logo } from '../components/Logo'
@@ -49,7 +50,7 @@ export function RegisterPage() {
 
   if (success) {
     return (
-      <AuthCard>
+      <AuthCard className="login-auth-background" cardClassName="login-auth-card" decorations={<AuthAnimatedDecorations />}>
         <div className="flex flex-col items-center py-6 text-center">
           <span className="thumbs-up text-6xl" aria-hidden>
             👍
@@ -73,7 +74,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthCard>
+    <AuthCard className="login-auth-background" cardClassName="login-auth-card" decorations={<AuthAnimatedDecorations />}>
       <form onSubmit={(e) => void onSubmit(e)}>
         <div className="mb-6 flex flex-col items-center">
           <Logo size={64} />

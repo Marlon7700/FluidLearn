@@ -5,7 +5,7 @@ export type MenuLink = { label: string; href: string }
 /** Para empezar */
 export const START_HREFS = [
   '/test', // Test de nivel
-  '#planes', // Niveles
+  '/niveles', // Niveles
   '#promociones', // Videos / recursos
   '#planes', // Curso intensivo
   '#planes', // Conversación
@@ -15,8 +15,8 @@ export const START_HREFS = [
 
 /** Nuestro curso */
 export const COURSE_HREFS = [
-  '#nosotros', // Cómo funciona
-  '#nosotros', // Método natural
+  '/como-funciona', // Cómo funciona
+  '/como-funciona', // Método natural
   '#planes', // Precios
   '/register', // Nuestra app
   '#comparativa', // Certificado FluidLearn
