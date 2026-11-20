@@ -1,58 +1,63 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import { Building2, Lock, Mail, RefreshCw, ShieldCheck, UserRound } from 'lucide-react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Building2, Lock, Mail, UserRound } from 'lucide-react'
 import { AuthCard } from '../components/AppFrame'
 import { AuthAnimatedDecorations } from '../components/AuthAnimatedDecorations'
 import { FieldWithIcon, iconField } from '../components/FieldWithIcon'
+import { GoogleIcon } from '../components/GoogleIcon'
 import { Logo } from '../components/Logo'
 import { useAuth } from '../context/AuthContext'
-import { generateSecureAdminCode, type AdminDelivery } from '../lib/adminProfile'
+import type { AdminDelivery } from '../lib/adminProfile'
 
 export function RegisterAdminPage() {
-  const { signUpAdmin } = useAuth()
+  const { signUpAdmin, registerAdminWithGoogle, user, loading, isAdmin, adminOtpPending } = useAuth()
+  const nav = useNavigate()
   const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
   const [contactEmail, setContactEmail] = useState('')
   const [preferredDelivery, setPreferredDelivery] = useState<AdminDelivery>('personal')
-  const [generatedCode, setGeneratedCode] = useState(() => generateSecureAdminCode(10))
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [doneMsg, setDoneMsg] = useState('')
-  const [extraHint, setExtraHint] = useState('')
 
-  function refreshCode() {
-    setGeneratedCode(generateSecureAdminCode(10))
+  if (!loading && user && isAdmin && !adminOtpPending) {
+    return <Navigate to="/home" replace />
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
     setError('')
-    setDoneMsg('')
-    setExtraHint('')
     try {
       const result = await signUpAdmin({
         password,
         fullName,
         contactEmail,
         preferredDelivery,
-        generatedCode,
       })
-      setDoneMsg(
-        `Cuenta guardada. Revisá tu bandeja (y spam) en ${result.emailedTo}: ahí está el código para entrar como administrador.`,
-      )
-      if (result.needsInboxConfirm || result.channel === 'formsubmit') {
-        setExtraHint(
-          'Si es la primera vez que usas ese correo, FormSubmit te manda un enlace de activación: ábrelo y vuelve a pulsar «Enviar código» en el login.',
-        )
-      }
-      if (result.channel === 'dev-console') {
-        setExtraHint(
-          `Modo desarrollo: el correo no salió por un proveedor. Tu código es ${generatedCode} (también en la consola F12).`,
-        )
-      }
+      const info = result.needsLogin
+        ? 'Tu cuenta ya existe. Entra, pulsa Enviar código y escribe el que llega a tu correo.'
+        : result.needsInboxConfirm
+          ? `Te enviamos un enlace a ${result.emailedTo}. Ábrelo para activar el envío y luego pulsa Enviar código otra vez.`
+          : `Código enviado a ${result.emailedTo}. Revisa bandeja y spam.`
+      nav('/login', {
+        replace: true,
+        state: { adminMode: true, email: contactEmail.trim().toLowerCase(), info },
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onGoogle() {
+    setBusy(true)
+    setError('')
+    try {
+      await registerAdminWithGoogle(preferredDelivery)
+      nav('/home', { replace: true })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo registrar con Google.')
     } finally {
       setBusy(false)
     }
@@ -74,11 +79,11 @@ export function RegisterAdminPage() {
           <Logo size={64} />
           <h1 className="mt-4 text-center text-2xl font-bold text-[#1967D2]">Registrar administrador</h1>
           <p className="mt-2 text-center text-xs text-[#5F6368]">
-            Guardamos tus datos y enviamos el código a tu correo para el login de administración.
+            Puedes crear la cuenta con Google o con correo y contraseña. El código, si lo usas, se guarda hasheado.
           </p>
         </div>
 
-        <p className="mb-2 text-xs font-medium text-[#5F6368]">¿Dónde quieres recibir el código?</p>
+        <p className="mb-2 text-xs font-medium text-[#5F6368]">¿Dónde quieres recibir avisos y códigos?</p>
         <div className="mb-4 grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -102,6 +107,20 @@ export function RegisterAdminPage() {
           >
             Institucional
           </button>
+        </div>
+
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void onGoogle()}
+          className="mb-5 inline-flex w-full items-center justify-center gap-3 rounded-xl border border-[#1967D2] py-4 font-medium text-[#1967D2] disabled:opacity-60"
+        >
+          <GoogleIcon size={22} />
+          {busy ? 'Conectando con Google…' : 'Registrarme con Google'}
+        </button>
+
+        <div className="mb-5 flex items-center gap-4 text-sm text-slate-500">
+          <span className="h-px flex-1 bg-slate-200" /> o con correo <span className="h-px flex-1 bg-slate-200" />
         </div>
 
         <FieldWithIcon className="mb-4" icon={<UserRound size={18} />}>
@@ -141,31 +160,9 @@ export function RegisterAdminPage() {
           />
         </FieldWithIcon>
 
-        <FieldWithIcon className="mb-2" icon={<ShieldCheck size={18} />}>
-          <input
-            className={`${iconField} pr-12 font-mono tracking-wider`}
-            value={generatedCode}
-            readOnly
-            aria-label="Código seguro generado"
-          />
-          <button
-            type="button"
-            title="Generar otro código"
-            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#1967D2]"
-            onClick={refreshCode}
-          >
-            <RefreshCw size={18} />
-          </button>
-        </FieldWithIcon>
-        <p className="mb-4 text-center text-[11px] text-[#5F6368]">
-          Este código se guarda y se envía a tu correo al crear la cuenta.
-        </p>
-
         {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
-        {doneMsg && <p className="mb-2 text-sm text-emerald-600">{doneMsg}</p>}
-        {extraHint && <p className="mb-3 text-xs text-amber-700">{extraHint}</p>}
         <button disabled={busy} className="w-full rounded-xl bg-[#1967D2] py-4 text-white">
-          {busy ? 'Guardando y enviando correo…' : 'Crear admin y enviar código al correo'}
+          {busy ? 'Enviando código cifrado…' : 'Guardar y enviar código al correo'}
         </button>
         <Link to="/login" className="mt-6 block text-center font-bold text-[#1967D2]">
           Ir al login

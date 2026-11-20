@@ -56,7 +56,7 @@ export function LandingMobileDrawer({
 
   const topLinks = [
     { href: '#inicio', to: '/', label: t.navHome },
-    { href: '#contacto', to: '/', label: t.navContact },
+    { href: '/contacto', to: '/contacto', label: t.navContact },
   ]
 
   if (!open) return null
@@ -132,9 +132,9 @@ export function LandingMobileDrawer({
           <ul className={`border-b py-1 ${border}`}>
             {topLinks.map((item) => (
               <li key={item.label}>
-                {sectionMode === 'route' ? (
+                {item.href.startsWith('/') || sectionMode === 'route' ? (
                   <Link
-                    to={item.to}
+                    to={item.href.startsWith('/') ? item.href : item.to}
                     className={`block px-5 py-3.5 text-[16px] font-medium transition ${link}`}
                     onClick={onClose}
                   >

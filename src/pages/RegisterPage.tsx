@@ -131,7 +131,11 @@ export function RegisterPage() {
         <button
           type="button"
           className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-xl border border-[#1967D2] py-4 text-[#1967D2]"
-          onClick={() => void google()}
+          onClick={() =>
+            void google().catch((err) =>
+              setError(err instanceof Error ? err.message : 'No se pudo entrar con Google.'),
+            )
+          }
         >
           <GoogleIcon size={22} />
           Continuar con Google

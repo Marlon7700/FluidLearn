@@ -139,10 +139,69 @@ export const QUIZZES: Record<string, SkillQuiz> = {
 
 export const SKILL_META: Record<
   SkillKey,
-  { title: string; subtitle: string; accent: string; bg: string; progress: string }
+  { title: string; subtitle: string; accent: string; bg: string; progress: string; cover: string }
 > = {
-  listening: { title: 'Listening', subtitle: 'Comprensión auditiva', accent: '#20CE9F', bg: '#EFFBF7', progress: '#39D0A7' },
-  speaking: { title: 'Speaking', subtitle: 'Expresión oral', accent: '#FFC229', bg: '#FFFAEC', progress: '#F6D44D' },
-  reading: { title: 'Reading', subtitle: 'Comprensión lectora', accent: '#F36D86', bg: '#FFF3F6', progress: '#E86A8B' },
-  writing: { title: 'Writing', subtitle: 'Expresión escrita', accent: '#9A78FF', bg: '#F7F3FF', progress: '#9C87F6' },
+  listening: {
+    title: 'Listening',
+    subtitle: 'Comprensión auditiva',
+    accent: '#1DBF9A',
+    bg: 'linear-gradient(180deg,#E8FBF4 0%,#D4F5EA 100%)',
+    progress: '#1DBF9A',
+    cover: '/course-video-phones.png',
+  },
+  speaking: {
+    title: 'Speaking',
+    subtitle: 'Expresión oral',
+    accent: '#F5B942',
+    bg: 'linear-gradient(180deg,#FFF8E4 0%,#FDEEC4 100%)',
+    progress: '#F5B942',
+    cover: '/photo-1522202176988-66273c2fd55f.jpg',
+  },
+  reading: {
+    title: 'Reading',
+    subtitle: 'Comprensión lectora',
+    accent: '#F06B88',
+    bg: 'linear-gradient(180deg,#FFEAF0 0%,#FFD6E0 100%)',
+    progress: '#F06B88',
+    cover: '/login-background.png',
+  },
+  writing: {
+    title: 'Writing',
+    subtitle: 'Expresión escrita',
+    accent: '#8B6EF6',
+    bg: 'linear-gradient(180deg,#F1EBFF 0%,#E4D9FF 100%)',
+    progress: '#8B6EF6',
+    cover: '/course-video-phones.png',
+  },
+}
+
+export const COURSE_INTRO: Record<SkillKey, { lead: string; body: string[] }> = {
+  listening: {
+    lead: 'Este espacio es el punto de partida para entrenar tu oído en inglés real.',
+    body: [
+      'Aquí encontrarás audios cortos, diálogos y noticias con actividades de selección. El curso está organizado por unidades para que avances de forma clara y práctica.',
+      'Te invitamos a escuchar, repetir y cuestionar lo que oyes en contextos cotidianos.',
+    ],
+  },
+  speaking: {
+    lead: 'Este espacio es el punto de partida para comunicar, crear y hablar con confianza.',
+    body: [
+      'Aquí encontrarás drills de pronunciación, role-plays y conversación informal. El curso está organizado por unidades, alineado a tu progreso en FluidLearn.',
+      'Te invitamos a explorar, participar, grabar tu voz y, sobre todo, a cuestionar cómo te expresas en un mundo cada vez más digital.',
+    ],
+  },
+  reading: {
+    lead: 'Este espacio es el punto de partida para leer con propósito y extraer ideas clave.',
+    body: [
+      'Aquí encontrarás textos cortos, tablas y vocabulario en contexto. El curso está organizado por unidades para que puedas avanzar de manera clara, práctica y dinámica.',
+      'Te invitamos a explorar, subrayar y conectar lo que lees con tu vida académica.',
+    ],
+  },
+  writing: {
+    lead: 'Este espacio es el punto de partida para escribir con claridad e integridad académica.',
+    body: [
+      'Aquí encontrarás correspondencia, puntuación, voz pasiva y conectores. El curso está organizado por unidades para que practiques de forma guiada.',
+      'Te invitamos a redactar, revisar y mejorar cada texto con los criterios de FluidLearn.',
+    ],
+  },
 }

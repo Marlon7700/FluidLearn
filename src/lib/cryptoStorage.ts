@@ -1,4 +1,12 @@
-const STORAGE_KEY = 'fluidlearn.login.v1'
+import { isAllowlistedAdminEmail } from './adminEmails'
+
+export type LoginSlot = 'student' | 'admin'
+
+const LEGACY_KEY = 'fluidlearn.login.v1'
+const SLOT_KEYS: Record<LoginSlot, string> = {
+  student: 'fluidlearn.login.student.v2',
+  admin: 'fluidlearn.login.admin.v2',
+}
 const SECRET = 'FluidLearn-USB-2026-local-vault'
 
 function toB64(bytes: ArrayBuffer | Uint8Array) {
@@ -35,15 +43,32 @@ async function getKey(salt: Uint8Array) {
   )
 }
 
-export async function saveEncryptedCredentials(email: string, password: string) {
+/** El vault mixto anterior mezclaba profesor y estudiante: se elimina, no se rellena en el otro login. */
+function dropLegacySharedVault() {
+  localStorage.removeItem(LEGACY_KEY)
+}
+
+export async function saveEncryptedCredentials(slot: LoginSlot, email: string, password: string) {
+  dropLegacySharedVault()
+  const normalized = email.trim().toLowerCase()
+  if (slot === 'student' && isAllowlistedAdminEmail(normalized)) {
+    return
+  }
+  if (slot === 'student') {
+    const adminSaved = await loadEncryptedCredentials('admin')
+    if (adminSaved && adminSaved.email === normalized) return
+  }
+  if (slot === 'admin' && !isAllowlistedAdminEmail(normalized)) {
+    /* admin no allowlist (p. ej. docente con Gmail): sí puede recordar, solo en el slot admin */
+  }
   const salt = crypto.getRandomValues(new Uint8Array(16))
   const iv = crypto.getRandomValues(new Uint8Array(12))
   const key = await getKey(salt)
-  const payload = new TextEncoder().encode(JSON.stringify({ email, password }))
+  const payload = new TextEncoder().encode(JSON.stringify({ email: normalized, password, slot }))
   const ivBuf = iv.buffer.slice(iv.byteOffset, iv.byteOffset + iv.byteLength) as ArrayBuffer
   const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivBuf }, key, payload)
   localStorage.setItem(
-    STORAGE_KEY,
+    SLOT_KEYS[slot],
     JSON.stringify({
       salt: toB64(salt),
       iv: toB64(iv),
@@ -52,8 +77,9 @@ export async function saveEncryptedCredentials(email: string, password: string) 
   )
 }
 
-export async function loadEncryptedCredentials(): Promise<{ email: string; password: string } | null> {
-  const raw = localStorage.getItem(STORAGE_KEY)
+export async function loadEncryptedCredentials(slot: LoginSlot): Promise<{ email: string; password: string } | null> {
+  dropLegacySharedVault()
+  const raw = localStorage.getItem(SLOT_KEYS[slot])
   if (!raw) return null
   try {
     const parsed = JSON.parse(raw) as { salt: string; iv: string; data: string }
@@ -63,15 +89,30 @@ export async function loadEncryptedCredentials(): Promise<{ email: string; passw
     const ivBuf = iv.buffer.slice(iv.byteOffset, iv.byteOffset + iv.byteLength) as ArrayBuffer
     const dataBuf = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer
     const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ivBuf }, key, dataBuf)
-    return JSON.parse(new TextDecoder().decode(plain)) as { email: string; password: string }
+    const saved = JSON.parse(new TextDecoder().decode(plain)) as { email: string; password: string; slot?: LoginSlot }
+    if (slot === 'student' && isAllowlistedAdminEmail(saved.email)) {
+      localStorage.removeItem(SLOT_KEYS.student)
+      return null
+    }
+    if (saved.slot && saved.slot !== slot) {
+      localStorage.removeItem(SLOT_KEYS[slot])
+      return null
+    }
+    return { email: saved.email, password: saved.password }
   } catch {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(SLOT_KEYS[slot])
     return null
   }
 }
 
-export function clearEncryptedCredentials() {
-  localStorage.removeItem(STORAGE_KEY)
+export function clearEncryptedCredentials(slot?: LoginSlot) {
+  dropLegacySharedVault()
+  if (slot) {
+    localStorage.removeItem(SLOT_KEYS[slot])
+    return
+  }
+  localStorage.removeItem(SLOT_KEYS.student)
+  localStorage.removeItem(SLOT_KEYS.admin)
 }
 
 export async function hashVerificationCode(code: string) {

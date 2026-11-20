@@ -117,6 +117,27 @@ export type LandingDict = {
   footerCopyright: string
   footerLegal: { label: string; to: string }[]
   brandTagline: string
+  contactKicker: string
+  contactTitle: string
+  contactLead: string
+  contactHelp: string
+  contactOfferTitle: string
+  contactOffers: string[]
+  contactAccessTitle: string
+  contactAccessItems: string[]
+  contactInfoTitle: string
+  contactEmailLabel: string
+  contactEmail: string
+  contactLocationLabel: string
+  contactLocation: string
+  contactHoursLabel: string
+  contactHours: string
+  contactInstTitle: string
+  contactInstBody: string
+  contactConnectTitle: string
+  contactConnectBody: string
+  contactQuote: string
+  contactWrite: string
 }
 
 const en: LandingDict = {
@@ -254,7 +275,7 @@ const en: LandingDict = {
     'Natural method',
     'Online English course',
     'English grammar',
-    'English verbs',
+    'English modal verbs',
     'Verb tenses',
     'Intensive course',
     'Conversation classes',
@@ -268,6 +289,43 @@ const en: LandingDict = {
     { label: 'Cookie policy', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
+  contactKicker: 'Contact',
+  contactTitle: 'We are here to help you',
+  contactLead:
+    'At FluidLearn, we believe learning English should be accessible, smart, and adaptable to every student. Our platform combines Artificial Intelligence, connected teachers, and personalized learning paths to help you reach your academic and professional goals.',
+  contactHelp:
+    'Whether you need information about our plans, technical support, institutional access for schools and universities, or guidance in your learning process, our team is ready to help.',
+  contactOfferTitle: 'What does FluidLearn offer?',
+  contactOffers: [
+    'Automatic assessment with Artificial Intelligence.',
+    'Connected teachers to answer your questions.',
+    'Microlearning lessons of 10 to 15 minutes.',
+    'Academic dashboard with progress tracking.',
+    'Level tests aligned with the CEFR (A1, A2, B1, B2, C1 and C2).',
+    'A platform that adapts to schools and universities.',
+  ],
+  contactAccessTitle: 'Accessibility for people with visual disabilities',
+  contactAccessItems: [
+    'Dark mode.',
+    'Text size adjustment.',
+    'Screen reader compatibility.',
+    'Keyboard navigation.',
+  ],
+  contactInfoTitle: 'Contact information',
+  contactEmailLabel: 'Email',
+  contactEmail: 'info@fluidlearn.com',
+  contactLocationLabel: 'Location',
+  contactLocation: 'Cúcuta, Norte de Santander, Colombia',
+  contactHoursLabel: 'Office hours',
+  contactHours: 'Monday to Friday: 8:00 a.m. – 6:00 p.m.',
+  contactInstTitle: 'Institutional partnerships',
+  contactInstBody:
+    'If you represent an educational institution and want to implement FluidLearn in your school or university, contact us to learn about our institutional plans and personalized academic solutions.',
+  contactConnectTitle: 'Connect with FluidLearn',
+  contactConnectBody:
+    'Learn English in a smart, accessible, and personalized way. We are committed to helping you develop the language skills you need for academic and professional growth.',
+  contactQuote: 'Your path to fluency starts here.',
+  contactWrite: 'Write to us',
 }
 
 const enGB: LandingDict = {
@@ -412,7 +470,7 @@ const pt: LandingDict = {
     'Método natural',
     'Curso de inglês online',
     'Gramática inglesa',
-    'Verbos em inglês',
+    'Verbos modais em inglês',
     'Tempos verbais',
     'Curso intensivo',
     'Aulas de conversação',
@@ -426,6 +484,43 @@ const pt: LandingDict = {
     { label: 'Política de cookies', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
+  contactKicker: 'Contacto',
+  contactTitle: 'Estamos aqui para ajudar',
+  contactLead:
+    'Na FluidLearn, acreditamos que aprender inglês deve ser acessível, inteligente e adaptável a cada estudante. A nossa plataforma combina Inteligência Artificial, professores ligados e percursos personalizados para te ajudar a alcançar os teus objetivos académicos e profissionais.',
+  contactHelp:
+    'Quer precises de informação sobre planos, suporte técnico, acesso institucional para escolas e universidades, ou acompanhamento no teu processo de aprendizagem, a nossa equipa está pronta para ajudar.',
+  contactOfferTitle: 'O que oferece a FluidLearn?',
+  contactOffers: [
+    'Avaliação automática com Inteligência Artificial.',
+    'Professores ligados para resolver dúvidas.',
+    'Lições de microlearning de 10 a 15 minutos.',
+    'Painel académico com acompanhamento de progresso.',
+    'Testes de nível alinhados com o QECR (A1, A2, B1, B2, C1 e C2).',
+    'Plataforma adaptável a escolas e universidades.',
+  ],
+  contactAccessTitle: 'Acessibilidade para pessoas com deficiência visual',
+  contactAccessItems: [
+    'Modo escuro.',
+    'Ajuste do tamanho do texto.',
+    'Compatibilidade com leitores de ecrã.',
+    'Navegação por teclado.',
+  ],
+  contactInfoTitle: 'Informação de contacto',
+  contactEmailLabel: 'Correio eletrónico',
+  contactEmail: 'info@fluidlearn.com',
+  contactLocationLabel: 'Localização',
+  contactLocation: 'Cúcuta, Norte de Santander, Colômbia',
+  contactHoursLabel: 'Horário de atendimento',
+  contactHours: 'Segunda a sexta: 8:00 – 18:00',
+  contactInstTitle: 'Convénios institucionais',
+  contactInstBody:
+    'Se representas uma instituição educativa e queres implementar a FluidLearn na tua escola ou universidade, contacta-nos para conhecer os planos institucionais e soluções académicas personalizadas.',
+  contactConnectTitle: 'Liga-te à FluidLearn',
+  contactConnectBody:
+    'Aprende inglês de forma inteligente, acessível e personalizada. Estamos empenhados em ajudar-te a desenvolver as competências linguísticas necessárias para o teu crescimento académico e profissional.',
+  contactQuote: 'O teu caminho para a fluência começa aqui.',
+  contactWrite: 'Escreve-nos',
 }
 
 const ptBR: LandingDict = {
@@ -594,7 +689,7 @@ const it: LandingDict = {
     'Metodo naturale',
     'Corso di inglese online',
     'Grammatica inglese',
-    'Verbi in inglese',
+    'Verbi modali in inglese',
     'Tempi verbali',
     'Corso intensivo',
     'Lezioni di conversazione',
@@ -608,6 +703,43 @@ const it: LandingDict = {
     { label: 'Cookie policy', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
+  contactKicker: 'Contatti',
+  contactTitle: 'Siamo qui per aiutarti',
+  contactLead:
+    'In FluidLearn crediamo che imparare l’inglese debba essere accessibile, intelligente e adattabile a ogni studente. La piattaforma unisce intelligenza artificiale, docenti connessi e percorsi personalizzati per raggiungere i tuoi obiettivi accademici e professionali.',
+  contactHelp:
+    'Che tu abbia bisogno di informazioni sui piani, supporto tecnico, accesso istituzionale per scuole e università o accompagnamento nel tuo percorso, il nostro team è pronto ad aiutarti.',
+  contactOfferTitle: 'Cosa offre FluidLearn?',
+  contactOffers: [
+    'Valutazione automatica con intelligenza artificiale.',
+    'Docenti connessi per risolvere i dubbi.',
+    'Lezioni di microlearning da 10 a 15 minuti.',
+    'Dashboard accademica con monitoraggio dei progressi.',
+    'Test di livello allineati al QCER (A1, A2, B1, B2, C1 e C2).',
+    'Piattaforma adattabile a scuole e università.',
+  ],
+  contactAccessTitle: 'Accessibilità per persone con disabilità visiva',
+  contactAccessItems: [
+    'Modalità scura.',
+    'Regolazione della dimensione del testo.',
+    'Compatibilità con screen reader.',
+    'Navigazione da tastiera.',
+  ],
+  contactInfoTitle: 'Informazioni di contatto',
+  contactEmailLabel: 'Email',
+  contactEmail: 'info@fluidlearn.com',
+  contactLocationLabel: 'Sede',
+  contactLocation: 'Cúcuta, Norte de Santander, Colombia',
+  contactHoursLabel: 'Orari',
+  contactHours: 'Lunedì–venerdì: 8:00 – 18:00',
+  contactInstTitle: 'Convenzioni istituzionali',
+  contactInstBody:
+    'Se rappresenti un istituto e vuoi implementare FluidLearn nella tua scuola o università, contattaci per i piani istituzionali e le soluzioni accademiche personalizzate.',
+  contactConnectTitle: 'Connettiti con FluidLearn',
+  contactConnectBody:
+    'Impara l’inglese in modo intelligente, accessibile e personalizzato. Siamo impegnati ad aiutarti a sviluppare le competenze linguistiche per la tua crescita accademica e professionale.',
+  contactQuote: 'Il tuo cammino verso la fluenza inizia qui.',
+  contactWrite: 'Scrivici',
 }
 
 const de: LandingDict = {
@@ -745,7 +877,7 @@ const de: LandingDict = {
     'Natürliche Methode',
     'Online-Englischkurs',
     'Englische Grammatik',
-    'Englische Verben',
+    'Englische Modalverben',
     'Zeitformen',
     'Intensivkurs',
     'Konversationskurse',
@@ -759,6 +891,43 @@ const de: LandingDict = {
     { label: 'Cookie-Richtlinie', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
+  contactKicker: 'Kontakt',
+  contactTitle: 'Wir sind für Sie da',
+  contactLead:
+    'Bei FluidLearn glauben wir, dass Englischlernen zugänglich, intelligent und an jede Lernende anpassbar sein sollte. Unsere Plattform verbindet Künstliche Intelligenz, vernetzte Lehrkräfte und personalisierte Lernpfade, damit Sie akademische und berufliche Ziele erreichen.',
+  contactHelp:
+    'Ob Informationen zu Plänen, technischer Support, institutioneller Zugang für Schulen und Hochschulen oder Begleitung im Lernprozess – unser Team hilft gern.',
+  contactOfferTitle: 'Was bietet FluidLearn?',
+  contactOffers: [
+    'Automatische Bewertung durch Künstliche Intelligenz.',
+    'Vernetzte Lehrkräfte für Ihre Fragen.',
+    'Microlearning-Lektionen von 10 bis 15 Minuten.',
+    'Akademisches Dashboard mit Fortschrittsverfolgung.',
+    'Einstufungstests gemäß GER (A1, A2, B1, B2, C1 und C2).',
+    'Anpassbare Plattform für Schulen und Universitäten.',
+  ],
+  contactAccessTitle: 'Barrierefreiheit für Menschen mit Sehbehinderung',
+  contactAccessItems: [
+    'Dunkelmodus.',
+    'Anpassung der Schriftgröße.',
+    'Kompatibilität mit Screenreadern.',
+    'Tastaturnavigation.',
+  ],
+  contactInfoTitle: 'Kontaktinformationen',
+  contactEmailLabel: 'E-Mail',
+  contactEmail: 'info@fluidlearn.com',
+  contactLocationLabel: 'Standort',
+  contactLocation: 'Cúcuta, Norte de Santander, Kolumbien',
+  contactHoursLabel: 'Öffnungszeiten',
+  contactHours: 'Montag bis Freitag: 8:00 – 18:00 Uhr',
+  contactInstTitle: 'Institutionelle Partnerschaften',
+  contactInstBody:
+    'Wenn Sie eine Bildungseinrichtung vertreten und FluidLearn an Ihrer Schule oder Universität einführen möchten, kontaktieren Sie uns für institutionelle Pläne und maßgeschneiderte Lösungen.',
+  contactConnectTitle: 'Verbinden Sie sich mit FluidLearn',
+  contactConnectBody:
+    'Lernen Sie Englisch intelligent, barrierefrei und personalisiert. Wir helfen Ihnen, die sprachlichen Kompetenzen für akademisches und berufliches Wachstum aufzubauen.',
+  contactQuote: 'Ihr Weg zur Flüssigkeit beginnt hier.',
+  contactWrite: 'Schreiben Sie uns',
 }
 
 const es: LandingDict = {
@@ -896,7 +1065,7 @@ const es: LandingDict = {
     'Método natural',
     'Curso de inglés online',
     'Gramática inglesa',
-    'Verbos en inglés',
+    'Verbos modales en inglés',
     'Tiempos verbales',
     'Curso intensivo',
     'Clases de conversación',
@@ -910,6 +1079,43 @@ const es: LandingDict = {
     { label: 'Política de cookies', to: '/legal/cookies' },
   ],
   brandTagline: 'EdTech · Universidad Simón Bolívar – MacondoLab',
+  contactKicker: 'Contacto',
+  contactTitle: 'Estamos aquí para ayudarte',
+  contactLead:
+    'En FluidLearn, creemos que aprender inglés debe ser accesible, inteligente y adaptable a las necesidades de cada estudiante. Nuestra plataforma combina Inteligencia Artificial, profesores conectados y rutas de aprendizaje personalizadas para ayudarte a alcanzar tus objetivos académicos y profesionales.',
+  contactHelp:
+    'Ya sea que necesites información sobre nuestros planes, soporte técnico, acceso institucional para colegios y universidades, o acompañamiento en tu proceso de aprendizaje, nuestro equipo está listo para ayudarte.',
+  contactOfferTitle: '¿Qué ofrece FluidLearn?',
+  contactOffers: [
+    'Evaluación automática mediante Inteligencia Artificial.',
+    'Profesores conectados para resolver dudas.',
+    'Lecciones de microlearning de 10 a 15 minutos.',
+    'Dashboard académico con seguimiento de progreso.',
+    'Pruebas de nivel alineadas con el MCER (A1, A2, B1, B2, C1 y C2).',
+    'Plataforma adaptable para colegios y universidades.',
+  ],
+  contactAccessTitle: 'Accesibilidad para personas con discapacidad visual',
+  contactAccessItems: [
+    'Modo oscuro.',
+    'Ajuste de tamaño de texto.',
+    'Compatibilidad con lectores de pantalla.',
+    'Navegación por teclado.',
+  ],
+  contactInfoTitle: 'Información de contacto',
+  contactEmailLabel: 'Correo electrónico',
+  contactEmail: 'info@fluidlearn.com',
+  contactLocationLabel: 'Ubicación',
+  contactLocation: 'Cúcuta, Norte de Santander, Colombia',
+  contactHoursLabel: 'Horario de atención',
+  contactHours: 'Lunes a Viernes: 8:00 a.m. - 6:00 p.m.',
+  contactInstTitle: 'Convenios institucionales',
+  contactInstBody:
+    'Si representas una institución educativa y deseas implementar FluidLearn en tu colegio o universidad, contáctanos para conocer nuestros planes institucionales y soluciones académicas personalizadas.',
+  contactConnectTitle: 'Conecta con FluidLearn',
+  contactConnectBody:
+    'Aprende inglés de forma inteligente, accesible y personalizada. Estamos comprometidos con ayudarte a desarrollar las competencias lingüísticas necesarias para tu crecimiento académico y profesional.',
+  contactQuote: 'Tu camino hacia la fluidez comienza aquí.',
+  contactWrite: 'Escríbenos',
 }
 
 const BY_CODE: Record<LandingLangCode, LandingDict> = {

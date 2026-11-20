@@ -2,8 +2,12 @@ import { ArrowLeft, Volume2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Page } from '../components/AppFrame'
+import { CrosswordGame } from '../components/games/CrosswordGame'
+import { HangmanGame } from '../components/games/HangmanGame'
+import { WordSearchGame } from '../components/games/WordSearchGame'
 import { useAuth } from '../context/AuthContext'
 import { QUIZZES } from '../data/catalog'
+import { quizFromActivity, useLiveCatalog } from '../lib/courseCatalogStore'
 import { loadLocalSkillQuestions, mergedQuiz, wordCount } from '../lib/localSkillQuestions'
 import type { SkillKey, SkillQuiz } from '../types'
 
@@ -11,6 +15,8 @@ export function ChallengePage() {
   const { skillKey = 'listening', taskId = '' } = useParams()
   const { completeActivity } = useAuth()
   const nav = useNavigate()
+  const catalog = useLiveCatalog()
+  const activity = catalog.activities.find((a) => a.id === taskId)
   const [quiz, setQuiz] = useState<SkillQuiz | undefined>(QUIZZES[taskId])
   const [answers, setAnswers] = useState<number[]>([])
   const [texts, setTexts] = useState<string[]>([])
@@ -20,9 +26,9 @@ export function ChallengePage() {
 
   useEffect(() => {
     void loadLocalSkillQuestions().then(() => {
-      setQuiz(mergedQuiz(taskId, QUIZZES[taskId]))
+      setQuiz(quizFromActivity(activity, mergedQuiz(taskId, QUIZZES[taskId])))
     })
-  }, [taskId])
+  }, [activity, taskId])
 
   const phrases = quiz?.speakPhrases ?? []
   const isSpeaking = phrases.length > 0
@@ -61,6 +67,25 @@ export function ChallengePage() {
     rec.start()
   }
 
+  async function finishGame(percent: number) {
+    setBusy(true)
+    try {
+      await completeActivity({
+        skillKey: skillKey as SkillKey,
+        taskId,
+        taskTitle: activity?.title || taskId.replaceAll('_', ' '),
+        overallPercent: percent,
+        quizCorrect: Math.round(percent / 10),
+        quizTotal: 10,
+      })
+      setDone(`Resultado: ${percent}%`)
+    } catch (e) {
+      setDone(e instanceof Error ? e.message : 'Error')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function submit() {
     if (!quiz) return
     setBusy(true)
@@ -81,7 +106,7 @@ export function ChallengePage() {
       await completeActivity({
         skillKey: skillKey as SkillKey,
         taskId,
-        taskTitle: taskId.replaceAll('_', ' '),
+        taskTitle: activity?.title || taskId.replaceAll('_', ' '),
         overallPercent: percent,
         quizCorrect: correct,
         quizTotal: total || 1,
@@ -94,7 +119,8 @@ export function ChallengePage() {
     }
   }
 
-  if (!quiz) return <p className="p-6">Actividad no encontrada.</p>
+  const kind = activity?.kind || 'quiz'
+  if (!quiz && kind === 'quiz') return <p className="p-6">Actividad no encontrada.</p>
 
   return (
     <Page>
@@ -102,7 +128,22 @@ export function ChallengePage() {
         <ArrowLeft size={18} /> Atrás
       </button>
       <div className="rounded-3xl bg-white p-6 shadow-sm dark:bg-[#1A2438] lg:p-8">
-        {quiz.intro && <p className="mb-4 whitespace-pre-wrap text-slate-600">{quiz.intro}</p>}
+        {activity?.dueAt ? <p className="mb-3 text-xs font-extrabold uppercase tracking-wide text-[#FF6B2C]">Entrega: {new Date(activity.dueAt).toLocaleString('es-CO')}</p> : null}
+        {kind === 'hangman' && (
+          <HangmanGame word={activity?.hangmanWord || activity?.gameWords?.[0] || 'ENGLISH'} clue={activity?.hangmanClue || activity?.subtitle || 'English word'} onComplete={(p) => void finishGame(p)} />
+        )}
+        {kind === 'wordsearch' && (
+          <WordSearchGame words={activity?.gameWords?.length ? activity.gameWords : ['CAT', 'DOG', 'BOOK']} onComplete={(p) => void finishGame(p)} />
+        )}
+        {kind === 'crossword' && (
+          <CrosswordGame clues={activity?.gameClues?.length ? activity.gameClues : [{ word: 'CAT', clue: 'A pet that meows' }]} onComplete={(p) => void finishGame(p)} />
+        )}
+        {kind === 'guide' && (activity?.materialText || activity?.intro) && (
+          <div className="mb-6 whitespace-pre-wrap rounded-2xl bg-[#F8FAFC] p-4 text-sm leading-relaxed text-slate-700">{activity.materialText || activity.intro}</div>
+        )}
+        {kind !== 'hangman' && kind !== 'wordsearch' && kind !== 'crossword' && quiz && (
+          <>
+        {quiz.intro && kind !== 'guide' && <p className="mb-4 whitespace-pre-wrap text-slate-600">{quiz.intro}</p>}
         {quiz.listenAloudText && (
           <button type="button" onClick={() => speak(quiz.listenAloudText!)} className="mb-6 inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 font-semibold text-white">
             <Volume2 size={18} /> Escuchar
@@ -151,6 +192,9 @@ export function ChallengePage() {
         <button disabled={busy} type="button" onClick={() => void submit()} className="w-full rounded-xl bg-brand py-3 font-semibold text-white">
           {busy ? 'Guardando…' : 'Enviar y completar'}
         </button>
+          </>
+        )}
+        {done && kind !== 'quiz' && kind !== 'guide' && <p className="mt-4 font-semibold text-brand">{done}</p>}
       </div>
     </Page>
   )

@@ -1,4 +1,5 @@
 export const DAILY_TIPS = [
+  'Social media: Follow one English-learning account and read their "Word of the day."',
   'Listen to greetings: Look for "Hello" and "Goodbye" variations in songs.',
   'Podcasts for beginners: Search for "English for absolute beginners" and listen for 5 minutes.',
   'Identify numbers: Listen to a countdown and write the numbers you hear.',

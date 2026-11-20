@@ -9,20 +9,42 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function authEmail() {
+      return request.auth.token.email is string
+        ? request.auth.token.email.lower()
+        : '';
+    }
+
+    function allowlistedAdminEmail() {
+      return authEmail() == 'admin@usb.ve'
+        || authEmail() == 'administracion@usb.ve'
+        || authEmail() == 'maopromaster11@gmail.com'
+        || authEmail() == 'martingmailcom95@gmail.com';
+    }
+
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == 'admin@usb.ve'
-        || request.auth.token.email == 'administracion@usb.ve'
-        || request.auth.token.email == 'maopromaster11@gmail.com'
+        allowlistedAdminEmail()
         || (
           exists(/databases/$(database)/documents/users/$(request.auth.uid))
-          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          && (
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+            || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.studentId == 'ADMIN'
+          )
         )
         || (
           exists(/databases/$(database)/documents/admins/$(request.auth.uid))
           && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin'
         )
       );
+    }
+
+    function classroomRead() {
+      return isSignedIn();
+    }
+
+    function classroomWrite() {
+      return isAdmin();
     }
 
     match /users/{userId} {
@@ -61,6 +83,37 @@ service cloud.firestore {
     match /published_skill_quizzes/{docId} {
       allow read: if isSignedIn();
       allow create, update, delete: if isAdmin();
+    }
+
+    match /course_skills/{skillId} {
+      allow read: if classroomRead();
+      allow create, update, delete: if classroomWrite();
+    }
+
+    match /course_activities/{activityId} {
+      allow read: if classroomRead();
+      allow create, update, delete: if classroomWrite();
+    }
+
+    match /course_units/{unitId} {
+      allow read: if classroomRead();
+      allow create, update, delete: if classroomWrite();
+    }
+
+    match /course_notices/{noticeId} {
+      allow read: if classroomRead();
+      allow create, update, delete: if classroomWrite();
+    }
+
+    match /course_guides/{guideId} {
+      allow read: if classroomRead();
+      allow create, update, delete: if classroomWrite();
+    }
+
+    match /courses/{skillId}/participants/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isAdmin();
     }
   }
 }

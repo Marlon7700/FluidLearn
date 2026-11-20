@@ -12,6 +12,14 @@ export interface CustomAvatar {
   accessory: Accessory
 }
 
+export type AppLanguageCode = 'es' | 'en' | 'pt' | 'it' | 'de'
+
+export interface NotificationPrefs {
+  dailyReminders: boolean
+  pendingActivities: boolean
+  levelUpdates: boolean
+}
+
 export interface UserProfile {
   uid: string
   email: string
@@ -23,6 +31,9 @@ export interface UserProfile {
   avatarIndex?: number
   customAvatar?: CustomAvatar
   role: 'student' | 'admin'
+  appLanguage: AppLanguageCode
+  notifications: NotificationPrefs
+  practiceMinutes: number
   /** Hash SHA-256 del código de verificación del correo (solo admins). */
   emailVerificationCodeHash?: string
   skillProgress: Record<SkillKey, number>
@@ -30,6 +41,27 @@ export interface UserProfile {
   streakDays: number
   streakLastDate?: string
   feedItems: FeedItem[]
+  recentAssessments: Assessment[]
+  firstName: string
+  lastName: string
+  country: string
+  city: string
+  timezone: string
+  visibility: 'visible' | 'hidden'
+  interests: string
+  imageAlt: string
+  createdAt?: string
+  lastAccess?: string
+}
+
+export interface Assessment {
+  taskId: string
+  taskTitle: string
+  skillKey: SkillKey
+  overallPercent: number
+  quizCorrect: number
+  quizTotal: number
+  at?: string
 }
 
 export interface FeedItem {
@@ -53,10 +85,62 @@ export interface SkillQuiz {
   questions: QuizQuestion[]
 }
 
+export type ActivityKind = 'quiz' | 'guide' | 'hangman' | 'wordsearch' | 'crossword'
+
+export type UnitStatus = 'published' | 'draft'
+
+export interface CourseUnitDoc {
+  id: string
+  title: string
+  skillKey: SkillKey
+  description: string
+  availableAt: string
+  status: UnitStatus
+  sort: number
+}
+
+export interface GameClue {
+  word: string
+  clue: string
+}
+
+export interface CourseSkillDoc {
+  title: string
+  subtitle: string
+  cover: string
+  lead: string
+  body: string[]
+  published?: boolean
+}
+
+export interface CourseActivityDoc {
+  id: string
+  skillKey: SkillKey
+  title: string
+  subtitle: string
+  intro: string
+  listenAloudText: string
+  speakPhrases: string[]
+  questions: QuizQuestion[]
+  sort: number
+  kind?: ActivityKind
+  dueAt?: string
+  materialText?: string
+  unitId?: string
+  published?: boolean
+  gameWords?: string[]
+  gameClues?: GameClue[]
+  hangmanWord?: string
+  hangmanClue?: string
+  points?: number
+}
+
 export interface SkillTask {
   id: string
   title: string
   subtitle: string
+  dueAt?: string
+  kind?: ActivityKind
 }
 
 export interface StudentRow {
@@ -65,5 +149,12 @@ export interface StudentRow {
   email: string
   studentId: string
   bio?: string
+  appLanguage?: AppLanguageCode
+  streakDays?: number
+  practiceMinutes?: number
+  completedTaskIds?: string[]
   skillProgress: Record<SkillKey, number>
+  skillGrades?: Record<SkillKey, number>
+  gradesPublished?: boolean
+  gradeFeedback?: string
 }

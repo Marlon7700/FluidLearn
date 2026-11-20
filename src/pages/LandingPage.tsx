@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import {
   Building2,
   Check,
@@ -18,6 +18,7 @@ import { FluidLearnLoadingOverlay } from '../components/FluidLearnLoadingOverlay
 import { LetterReveal, letterRevealDurationMs } from '../components/LetterReveal'
 import { useTabLoading } from '../components/RouteLoadingOverlay'
 import { useLandingReveal } from '../hooks/useLandingReveal'
+import { useAuth } from '../context/AuthContext'
 import {
   getLandingDict,
   htmlLangFor,
@@ -84,6 +85,7 @@ function readScale(): number {
 }
 
 export function LandingPage() {
+  const { user, loading: authLoading, adminOtpPending } = useAuth()
   const [fontScale, setFontScale] = useState(readScale)
   const [billing, setBilling] = useState<'3m' | '12m' | 'forever'>('12m')
   const [lang, setLang] = useState<LandingLangCode>(readLandingLang)
@@ -173,6 +175,13 @@ export function LandingPage() {
         free: i === 0 ? (row.freeLabel ?? true) : i === 1 ? true : false,
       }
     })
+
+  if (!authLoading && user && adminOtpPending) {
+    return <Navigate to="/login" replace />
+  }
+  if (!authLoading && user && !adminOtpPending) {
+    return <Navigate to="/home" replace />
+  }
 
   return (
     <div className="landing-root flex min-h-svh flex-col bg-[#0D1B2E] text-[#0D1B2E] dark:text-[#F1F5F9]">
@@ -471,54 +480,73 @@ export function LandingPage() {
             </p>
 
             <div
-              className="landing-reveal-group mt-8 overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-white shadow-sm dark:border-[#2A3650] dark:bg-[#1A2438]"
+              className="landing-reveal-group landing-compare-wrap mt-8 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm dark:border-[#2A3650] dark:bg-[#1A2438]"
               data-reveal
             >
-              <table className="w-full min-w-160 border-collapse text-left text-sm">
+              <table className="landing-compare-table w-full table-fixed border-collapse text-left text-sm">
                 <caption className="sr-only">{t.compareCaption}</caption>
                 <thead>
-                  <tr
-                    className="border-b border-[#E2E8F0] dark:border-[#2A3650]"
-                    data-reveal-child
-                    style={{ '--reveal-delay': '40ms' } as CSSProperties}
-                  >
-                    <th scope="col" className="px-4 py-4 font-semibold text-[#64748B]">
-                      {t.features}
-                    </th>
-                    <th scope="col" className="px-3 py-4 text-center font-bold text-[#FF6B2C]">
-                      {t.colPremium}
-                      <span className="mt-0.5 block text-xs font-normal text-[#64748B]">
-                        {billing === '3m' ? t.bill3 : billing === '12m' ? t.bill12 : t.billForever}
+                  <tr className="border-b border-[#E2E8F0] dark:border-[#2A3650]">
+                    <th scope="col" className="w-[46%] px-4 py-4 font-semibold text-[#64748B]">
+                      <span className="landing-compare-cell" style={{ '--reveal-delay': '40ms' } as CSSProperties}>
+                        {t.features}
                       </span>
                     </th>
-                    <th scope="col" className="px-3 py-4 text-center font-bold text-brand dark:text-cyan">
-                      {t.colInst}
-                      <span className="mt-0.5 block text-xs font-normal text-[#64748B]">{t.licenses}</span>
+                    <th scope="col" className="landing-compare-col-premium w-[18%] px-2 py-4 text-center font-bold text-[#FF6B2C] sm:px-3">
+                      <span className="landing-compare-cell" style={{ '--reveal-delay': '90ms' } as CSSProperties}>
+                        {t.colPremium}
+                        <span className="mt-0.5 block text-xs font-normal text-[#64748B]">
+                          {billing === '3m' ? t.bill3 : billing === '12m' ? t.bill12 : t.billForever}
+                        </span>
+                      </span>
                     </th>
-                    <th scope="col" className="px-3 py-4 text-center font-bold">
-                      {t.colFree}
+                    <th scope="col" className="w-[18%] px-2 py-4 text-center font-bold text-brand dark:text-cyan sm:px-3">
+                      <span className="landing-compare-cell" style={{ '--reveal-delay': '140ms' } as CSSProperties}>
+                        {t.colInst}
+                        <span className="mt-0.5 block text-xs font-normal text-[#64748B]">{t.licenses}</span>
+                      </span>
+                    </th>
+                    <th scope="col" className="w-[18%] px-2 py-4 text-center font-bold sm:px-3">
+                      <span className="landing-compare-cell" style={{ '--reveal-delay': '190ms' } as CSSProperties}>
+                        {t.colFree}
+                      </span>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {compareRows.map((row, i) => (
-                    <tr
-                      key={row.feature}
-                      className="border-b border-[#F1F5F9] last:border-0 dark:border-[#243044]"
-                      data-reveal-child
-                      style={{ '--reveal-delay': `${90 + i * 70}ms` } as CSSProperties}
-                    >
-                      <th scope="row" className="px-4 py-3.5 text-left font-medium">
-                        {row.feature}
+                    <tr key={row.feature} className="landing-compare-row border-b border-[#F1F5F9] last:border-0 dark:border-[#243044]">
+                      <th scope="row" className="px-3 py-3.5 text-left font-medium sm:px-4">
+                        <span
+                          className="landing-compare-cell max-w-full break-words"
+                          style={{ '--reveal-delay': `${220 + i * 85}ms` } as CSSProperties}
+                        >
+                          {row.feature}
+                        </span>
                       </th>
                       <td className="px-3 py-3.5 text-center">
-                        <CompareCell value={row.premium} included={t.included} missing={t.notIncluded} />
+                        <CompareCell
+                          value={row.premium}
+                          included={t.included}
+                          missing={t.notIncluded}
+                          delayMs={280 + i * 85}
+                        />
                       </td>
                       <td className="px-3 py-3.5 text-center">
-                        <CompareCell value={row.inst} included={t.included} missing={t.notIncluded} />
+                        <CompareCell
+                          value={row.inst}
+                          included={t.included}
+                          missing={t.notIncluded}
+                          delayMs={330 + i * 85}
+                        />
                       </td>
                       <td className="px-3 py-3.5 text-center">
-                        <CompareCell value={row.free} included={t.included} missing={t.notIncluded} />
+                        <CompareCell
+                          value={row.free}
+                          included={t.included}
+                          missing={t.notIncluded}
+                          delayMs={380 + i * 85}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -561,26 +589,33 @@ function CompareCell({
   value,
   included,
   missing,
+  delayMs = 0,
 }: {
   value: CompareValue
   included: string
   missing: string
+  delayMs?: number
 }) {
+  const delay = { '--mark-delay': `${delayMs}ms` } as CSSProperties
   if (value === true) {
     return (
-      <span className="inline-flex text-[#E8A317]" aria-label={included}>
-        <Check size={20} strokeWidth={3} aria-hidden />
+      <span className="landing-compare-mark inline-flex text-[#E8A317]" style={delay} aria-label={included}>
+        <Check className="landing-compare-mark-icon" size={20} strokeWidth={3} aria-hidden />
       </span>
     )
   }
   if (value === false) {
     return (
-      <span className="inline-flex text-[#CBD5E1] dark:text-[#475569]" aria-label={missing}>
+      <span className="landing-compare-miss inline-flex text-[#CBD5E1] dark:text-[#475569]" style={delay} aria-label={missing}>
         <X size={18} strokeWidth={2.5} aria-hidden />
       </span>
     )
   }
-  return <span className="text-xs font-medium text-[#64748B] dark:text-[#94A3B8]">{value}</span>
+  return (
+    <span className="landing-compare-cell text-xs font-medium text-[#64748B] dark:text-[#94A3B8]" style={{ '--reveal-delay': `${delayMs}ms` } as CSSProperties}>
+      {value}
+    </span>
+  )
 }
 
 function SectionTitle({

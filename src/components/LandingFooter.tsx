@@ -20,7 +20,6 @@ export function LandingFooter({ lang: langProp }: Props) {
 
   return (
     <footer
-      id="contacto"
       className="relative mt-auto w-full max-w-full shrink-0 border-0 bg-[#141820] text-white"
       style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
     >
@@ -112,13 +111,13 @@ export function LandingFooter({ lang: langProp }: Props) {
           <div className="md:col-span-2 lg:col-span-1">
             <p className="mb-3 text-base font-bold uppercase tracking-wide text-white">{t.footerResourcesTitle}</p>
             <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-base text-white/65 sm:grid-cols-2">
-              {t.footerResourceLinks.map((label, i) => (
+              {zipMenuLinks(t.footerResourceLinks, FOOTER_RESOURCE_HREFS).map((item) => (
                 <Link
-                  key={label}
-                  to={FOOTER_RESOURCE_HREFS[i] ?? '/'}
+                  key={item.label}
+                  to={item.href}
                   className="transition hover:text-white"
                 >
-                  {label}
+                  {item.label}
                 </Link>
               ))}
             </div>

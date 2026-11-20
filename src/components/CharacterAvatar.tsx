@@ -28,6 +28,44 @@ export const ACCESSORIES: { id: Accessory; label: string }[] = [
   { id: 'cap', label: 'Gorra' },
 ]
 
+export const AVATAR_RING_BG = [
+  '#F4C9A8',
+  '#E8D5B5',
+  '#F7C4C0',
+  '#C9E4C5',
+  '#D4C4F0',
+  '#F5D0C5',
+  '#B8D4E8',
+  '#E8C4B8',
+  '#C5E8E0',
+  '#E8DCC5',
+  '#D0C8E8',
+  '#F0D4A8',
+  '#C8E0C8',
+  '#E8C8D8',
+  '#C8D8F0',
+  '#F0E0C0',
+]
+
+export const AVATAR_PRESETS: CustomAvatar[] = [
+  { skin: '#5C3317', hair: '#1A1A1A', hairStyle: 'long', eyes: '#3B2314', shirt: '#20CE9F', accessory: 'none' },
+  { skin: '#F9D7B5', hair: '#1A1A1A', hairStyle: 'short', eyes: '#3B2314', shirt: '#162A4E', accessory: 'none' },
+  { skin: '#C68642', hair: '#1A1A1A', hairStyle: 'long', eyes: '#3B2314', shirt: '#1967D2', accessory: 'none' },
+  { skin: '#E8B887', hair: '#C4A35A', hairStyle: 'long', eyes: '#1F4E79', shirt: '#9A78FF', accessory: 'glasses' },
+  { skin: '#C68642', hair: '#1A1A1A', hairStyle: 'short', eyes: '#3B2314', shirt: '#F36D86', accessory: 'none' },
+  { skin: '#E8B887', hair: '#4A3728', hairStyle: 'curly', eyes: '#3B2314', shirt: '#1967D2', accessory: 'none' },
+  { skin: '#8D5524', hair: '#1A1A1A', hairStyle: 'curly', eyes: '#3B2314', shirt: '#162A4E', accessory: 'none' },
+  { skin: '#F9D7B5', hair: '#1A1A1A', hairStyle: 'fade', eyes: '#111111', shirt: '#162A4E', accessory: 'none' },
+  { skin: '#5C3317', hair: '#1A1A1A', hairStyle: 'fade', eyes: '#3B2314', shirt: '#20CE9F', accessory: 'none' },
+  { skin: '#E8B887', hair: '#1A1A1A', hairStyle: 'bun', eyes: '#3B2314', shirt: '#1967D2', accessory: 'none' },
+  { skin: '#F9D7B5', hair: '#F2F2F2', hairStyle: 'fade', eyes: '#1F4E79', shirt: '#9A78FF', accessory: 'none' },
+  { skin: '#C68642', hair: '#1A1A1A', hairStyle: 'bun', eyes: '#3B2314', shirt: '#F36D86', accessory: 'none' },
+  { skin: '#8D5524', hair: '#1A1A1A', hairStyle: 'long', eyes: '#3B2314', shirt: '#FFC229', accessory: 'none' },
+  { skin: '#C68642', hair: '#4A3728', hairStyle: 'long', eyes: '#3B2314', shirt: '#162A4E', accessory: 'none' },
+  { skin: '#F9D7B5', hair: '#2C5F8A', hairStyle: 'short', eyes: '#1F4E79', shirt: '#162A4E', accessory: 'none' },
+  { skin: '#E8B887', hair: '#4A3728', hairStyle: 'short', eyes: '#3B2314', shirt: '#1967D2', accessory: 'cap' },
+]
+
 export function CharacterAvatar({
   avatar,
   size = 120,
@@ -102,22 +140,24 @@ export function UserAvatar({
   initial?: string
 }) {
   const letter = initial || (profile?.fullName || 'U')[0]
-  if (profile?.customAvatar) {
-    return (
-      <div className="overflow-hidden rounded-full" style={{ width: size, height: size }}>
-        <CharacterAvatar avatar={profile.customAvatar} size={size} />
-      </div>
-    )
-  }
-  const src = profile?.profilePhotoUrl || avatarSrc(profile?.avatarIndex)
+  const catalog = avatarSrc(profile?.avatarIndex)
+  const src = profile?.profilePhotoUrl || catalog
+
   if (src) {
     return (
       <img
         src={src}
         alt=""
-        className="avatar-bob h-full w-full rounded-full object-cover"
+        className="avatar-bob rounded-full object-cover object-top"
         style={{ width: size, height: size }}
       />
+    )
+  }
+  if (profile?.customAvatar) {
+    return (
+      <div className="overflow-hidden rounded-full" style={{ width: size, height: size }}>
+        <CharacterAvatar avatar={profile.customAvatar} size={size} />
+      </div>
     )
   }
   return (

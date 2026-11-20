@@ -30,9 +30,13 @@ export const firebaseConfig: FirebaseOptions = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
+auth.languageCode = 'es'
 export const db = getFirestore(app)
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
+googleProvider.addScope('email')
+googleProvider.addScope('profile')
+googleProvider.setCustomParameters({ prompt: 'select_account' })
 
 if (import.meta.env.DEV) {
   // Solo projectId — nunca loguear apiKey ni appId completos.

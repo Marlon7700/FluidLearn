@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, GraduationCap, KeyRound, Lock, Mail, Send, Shield } from 'lucide-react'
 import { AuthCard } from '../components/AppFrame'
 import { AuthAnimatedDecorations } from '../components/AuthAnimatedDecorations'
@@ -12,47 +12,96 @@ import {
   clearEncryptedCredentials,
   loadEncryptedCredentials,
   saveEncryptedCredentials,
+  type LoginSlot,
 } from '../lib/cryptoStorage'
+import { isAllowlistedAdminEmail } from '../lib/adminEmails'
+
+type LoginNavState = { adminMode?: boolean; email?: string; info?: string }
 
 export function LoginPage() {
-  const { signIn, google, requestAdminEmailCode, user, loading } = useAuth()
+  const { signIn, google, requestAdminEmailCode, resetPassword, user, loading, adminOtpPending } = useAuth()
   const nav = useNavigate()
-  const [email, setEmail] = useState('')
+  const location = useLocation()
+  const incoming = (location.state as LoginNavState | null) ?? null
+  const [email, setEmail] = useState(incoming?.email ?? '')
   const [password, setPassword] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [delivery, setDelivery] = useState<AdminDelivery>('personal')
   const [codeSentTo, setCodeSentTo] = useState('')
-  const [adminMode, setAdminMode] = useState(false)
+  const [adminMode, setAdminMode] = useState(Boolean(incoming?.adminMode))
   const [remember, setRemember] = useState(false)
   const [hide, setHide] = useState(true)
   const [error, setError] = useState('')
-  const [info, setInfo] = useState('')
+  const [info, setInfo] = useState(incoming?.info ?? '')
   const [busy, setBusy] = useState(false)
   const [sendingCode, setSendingCode] = useState(false)
+  const [sendWait, setSendWait] = useState(0)
+
+  function applySlotFields(saved: { email: string; password: string } | null, incomingEmail?: string) {
+    if (incomingEmail) {
+      setEmail(incomingEmail)
+      setPassword('')
+      setRemember(false)
+      return
+    }
+    if (!saved) {
+      setEmail('')
+      setPassword('')
+      setRemember(false)
+      return
+    }
+    setEmail(saved.email)
+    setPassword(saved.password)
+    setRemember(true)
+  }
 
   useEffect(() => {
-    void loadEncryptedCredentials().then((saved) => {
-      if (!saved) return
-      setEmail(saved.email)
-      setPassword(saved.password)
-      setRemember(true)
+    const slot: LoginSlot = adminMode ? 'admin' : 'student'
+    void loadEncryptedCredentials(slot).then((saved) => {
+      applySlotFields(saved, incoming?.email)
     })
+    // Solo al montar: el cambio Estudiante/Admin limpia y carga su propio vault.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!loading && user) return <Navigate to="/home" replace />
+  useEffect(() => {
+    if (sendWait <= 0) return
+    const t = window.setTimeout(() => setSendWait((s) => s - 1), 1000)
+    return () => window.clearTimeout(t)
+  }, [sendWait])
+
+  if (!loading && user && !adminOtpPending) return <Navigate to="/home" replace />
 
   async function onSendCode() {
     setError('')
     setInfo('')
+    if (sendWait > 0) return
     if (!email.trim() || !password) {
       setError('Escribe correo y contraseña antes de enviar el código.')
       return
     }
     setSendingCode(true)
     try {
-      const { to } = await requestAdminEmailCode(email.trim(), password, delivery)
+      const { to, needsInboxConfirm, throttled } = await requestAdminEmailCode(
+        email.trim(),
+        password,
+        delivery,
+      )
       setCodeSentTo(to)
-      setInfo(`Código enviado a ${to}. Revisa bandeja de entrada y spam.`)
+      setSendWait(25)
+      if (throttled) {
+        setInfo(
+          `Firebase limitó el login, pero el código se envió a ${to}. Revisa bandeja y spam. Espera 15–30 min y pulsa Entrar (no Enviar código otra vez).`,
+        )
+      } else if (needsInboxConfirm) {
+        setInfo(
+          `Abre el correo de ${to} y confirma el enlace de FormSubmit. Luego espera un minuto y pulsa Enviar código otra vez.`,
+        )
+      } else {
+        setInfo(
+          `Código enviado a ${to} (${delivery === 'personal' ? 'personal' : 'institucional'}). Revisa bandeja y spam.`,
+        )
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo enviar el código.')
     } finally {
@@ -65,19 +114,50 @@ export function LoginPage() {
     setBusy(true)
     setError('')
     try {
+      const slot: LoginSlot = adminMode ? 'admin' : 'student'
+      if (!adminMode && isAllowlistedAdminEmail(email)) {
+        throw new Error('Esa cuenta es de administración. Entra en la pestaña Administración.')
+      }
       await signIn(email.trim(), password, {
         adminMode,
         emailVerificationCode: adminMode ? verificationCode : undefined,
       })
       if (remember) {
-        await saveEncryptedCredentials(email.trim(), password)
+        await saveEncryptedCredentials(slot, email.trim(), password)
       } else {
-        clearEncryptedCredentials()
+        clearEncryptedCredentials(slot)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión. Verifica tus credenciales.')
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function onGoogleAdmin() {
+    setBusy(true)
+    setError('')
+    try {
+      await google({ adminMode: true })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo entrar con Google.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onForgotPassword() {
+    setError('')
+    setInfo('')
+    if (!email.trim()) {
+      setError('Escribe tu correo y pulsa otra vez Olvidé mi contraseña.')
+      return
+    }
+    try {
+      await resetPassword(email.trim())
+      setInfo(`Te enviamos un enlace a ${email.trim()} para crear una contraseña nueva. Luego vuelve y entra.`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo enviar el restablecimiento.')
     }
   }
 
@@ -106,6 +186,9 @@ export function LoginPage() {
               setAdminMode(false)
               setCodeSentTo('')
               setInfo('')
+              setError('')
+              setHide(true)
+              void loadEncryptedCredentials('student').then((saved) => applySlotFields(saved))
             }}
           >
             <GraduationCap size={18} className={!adminMode ? 'animate-bounce-soft' : ''} />
@@ -114,7 +197,12 @@ export function LoginPage() {
           <button
             type="button"
             className={`flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition ${adminMode ? 'bg-[#1967D2] text-white' : 'bg-white text-[#1967D2]'}`}
-            onClick={() => setAdminMode(true)}
+            onClick={() => {
+              setAdminMode(true)
+              setError('')
+              setHide(true)
+              void loadEncryptedCredentials('admin').then((saved) => applySlotFields(saved))
+            }}
           >
             <Shield size={18} className={adminMode ? 'animate-bounce-soft' : ''} />
             Administración
@@ -122,17 +210,26 @@ export function LoginPage() {
         </div>
         {adminMode && (
           <p className="mb-4 text-center text-xs leading-snug text-[#5F6368]">
-            Elige correo personal o institucional, envía el código y escríbelo para entrar.
+            Elige Personal, escribe tu Gmail, pulsa Enviar código y entra con el que llega a tu bandeja (nunca se guarda en claro).
           </p>
         )}
 
         <FieldWithIcon icon={<Mail size={18} />}>
           <input
             className={iconField}
-            placeholder="correo@usb.ve"
+            placeholder={
+              adminMode
+                ? delivery === 'personal'
+                  ? 'Correo personal (Gmail…)'
+                  : 'Correo institucional'
+                : 'correo@usb.ve'
+            }
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
+            name={adminMode ? 'admin-email' : 'student-email'}
+            autoComplete={adminMode ? 'off' : 'username'}
+            autoCapitalize="none"
+            spellCheck={false}
             required
           />
         </FieldWithIcon>
@@ -144,7 +241,8 @@ export function LoginPage() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
+            name={adminMode ? 'admin-password' : 'student-password'}
+            autoComplete={adminMode ? 'off' : 'current-password'}
             required
           />
           <button
@@ -187,12 +285,16 @@ export function LoginPage() {
             </div>
             <button
               type="button"
-              disabled={sendingCode || busy}
+              disabled={sendingCode || busy || sendWait > 0}
               onClick={() => void onSendCode()}
               className="mb-3 inline-flex items-center justify-center gap-2 rounded-xl border border-[#1967D2] py-3 text-sm font-semibold text-[#1967D2] disabled:opacity-60"
             >
               <Send size={16} />
-              {sendingCode ? 'Enviando…' : 'Enviar código al correo'}
+              {sendingCode
+                ? 'Enviando…'
+                : sendWait > 0
+                  ? `Espera ${sendWait}s`
+                  : 'Enviar código al correo'}
             </button>
             {codeSentTo && (
               <p className="mb-2 text-center text-xs text-emerald-700">Destino: {codeSentTo}</p>
@@ -206,8 +308,6 @@ export function LoginPage() {
                   setVerificationCode(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12).toUpperCase())
                 }
                 autoComplete="one-time-code"
-                required
-                minLength={4}
                 maxLength={12}
               />
             </FieldWithIcon>
@@ -229,6 +329,30 @@ export function LoginPage() {
         <button disabled={busy} className="mt-6 rounded-xl bg-[#1967D2] py-4 text-base text-white disabled:opacity-60">
           {busy ? '…' : 'Entrar'}
         </button>
+        {adminMode && (
+          <>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void onForgotPassword()}
+              className="mt-3 w-full text-center text-sm font-semibold text-[#1967D2]"
+            >
+              Olvidé mi contraseña
+            </button>
+            <div className="my-5 flex items-center gap-4 text-sm text-slate-500">
+              <span className="h-px flex-1 bg-slate-200" /> o <span className="h-px flex-1 bg-slate-200" />
+            </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void onGoogleAdmin()}
+              className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-[#1967D2] py-4 font-medium text-[#1967D2]"
+            >
+              <GoogleIcon size={22} />
+              Entrar como admin con Google
+            </button>
+          </>
+        )}
 
         {!adminMode && (
           <>
@@ -238,7 +362,11 @@ export function LoginPage() {
             <button
               type="button"
               disabled={busy}
-              onClick={() => void google().catch(() => setError('Inicio de sesión cancelado.'))}
+              onClick={() =>
+                void google().catch((err) =>
+                  setError(err instanceof Error ? err.message : 'No se pudo entrar con Google.'),
+                )
+              }
               className="inline-flex items-center justify-center gap-3 rounded-xl border border-[#1967D2] py-4 font-medium text-[#1967D2]"
             >
               <GoogleIcon size={22} />

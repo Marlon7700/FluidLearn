@@ -98,15 +98,9 @@ export function LandingNavbar({ lang, onLangChange, langLoading = false, section
             <LandingNavDropdown label={t.menuCourseTitle} items={mapped(courseLinks)} uppercase />
             <LandingNavDropdown label={t.menuResourcesTitle} items={mapped(resourceLinks)} uppercase />
             <LandingNavDropdown label={t.navPlans} items={mapped(planLinks)} uppercase />
-            {routeHome ? (
-              <Link to="/" className={navLinkClass}>
-                {t.navContact}
-              </Link>
-            ) : (
-              <a href="#contacto" className={navLinkClass}>
-                {t.navContact}
-              </a>
-            )}
+            <Link to="/contacto" className={navLinkClass}>
+              {t.navContact}
+            </Link>
           </nav>
 
           <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-4">
